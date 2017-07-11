@@ -5,6 +5,7 @@ from pager import PagedScreen
 
 cad = pifacecad.PiFaceCAD()
 lcd = cad.lcd
+lcd.backlight_on()
 
 def actionA(pager):
     lcd.clear()
@@ -43,18 +44,19 @@ def actionE(pager):
 
 def createPagesForScreen():
     pages = [{"text": "This is page 1",
-              "actions": [{"label": "A", "action": "actionA"}, {"label": "B", "action": "actionB"},
-                          {"label": "C", "action": "actionC"}, {"label": "D", "action": "actionD"},
-                          {"label": "E", "action": "actionE"}]},
+              "actions": [{"label": "A", "action": "pager_example.actionA"}, {"label": "B", "action": "pager_example.actionB"},
+                          {"label": "C", "action": "pager_example.actionC"}, {"label": "D", "action": "pager_example.actionD"},
+                          {"label": "E", "action": "pager_example.actionE"}]},
              {"text": "This is page 2",
-              "actions": [{"label": "A2", "action": "actionA"}, {"label": "B2", "action": "actionB"},
-                          {"label": "C2", "action": "actionC"}, {"label": "D2", "action": "actionD"},
-                          {"label": "E2", "action": "actionE"}]}
+              "actions": [{"label": "F", "action": "pager_example.actionA"}, {"label": "G", "action": "pager_example.actionB"},
+                          {"label": "H", "action": "pager_example.actionC"}, {"label": "I", "action": "pager_example.actionD"},
+                          {"label": "J", "action": "pager_example.actionE"}]}
              ]
     return pages
 
 
 if __name__ == '__main__':
+
     screen1 = PagedScreen(cad=cad, pages=createPagesForScreen())
     # screen2 = PagedScreen(lcd=lcd, pages=getPagesForScreen2())
     screen1.display(page=0)
