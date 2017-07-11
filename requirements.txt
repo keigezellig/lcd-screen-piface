@@ -1,0 +1,4 @@
+git+https://github.com/piface/pifacecad/#egg=pifacecad
+git+https://github.com/piface/pifacecommon/#egg=pifacecommon
+python-lirc==1.2.1
+
