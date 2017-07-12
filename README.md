@@ -4,8 +4,10 @@ Some modules to create screens more easily for a Piface CAD 2
 
 - [Pager](/pager): A screen consisting of multiple pages with assignable actions to the PifaceCAD buttons
 
-## Installation
-TODO
+## Usage in your own projects
+See the examples
 
-## How to use
-See examples in each module
+## How to run the examples 
+**You need a RPi and the Piface CAD 2 addon module**
+- Install the Piface CAD libraries on the Rpi (see [here](https://github.com/piface/pifacecad/))
+- Run an example by executing `python3 *-example` on the Pi where * is for example `pager`
