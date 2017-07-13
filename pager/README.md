@@ -58,6 +58,6 @@ Displays page pageno (0 based)
 
 #### Clean up
 
-`screen1.clean_up`
+`screen1.clean_up()`
 
 Cleans up resources (needs **always** to be called after finishing the application)
