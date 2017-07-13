@@ -1,11 +1,15 @@
+import threading
+
 import pifacecad
 from time import sleep
 
 from pager import PagedScreen
 
+global end_barrier
+end_barrier = threading.Barrier(2)
 cad = pifacecad.PiFaceCAD()
 lcd = cad.lcd
-lcd.backlight_on()
+
 
 def actionA(pager):
     lcd.clear()
@@ -41,16 +45,62 @@ def actionE(pager):
     sleep(5)
     pager.display()
 
+def play(pager):
+    lcd.clear()
+    lcd.write("Play")
+    sleep(5)
+    pager.display()
+
+def pause(pager):
+    lcd.clear()
+    lcd.write("Pause")
+    sleep(5)
+    pager.display()
+
+def stop(pager):
+    lcd.clear()
+    lcd.write("Stop")
+    sleep(5)
+    pager.display()
+
+def record(pager):
+    lcd.clear()
+    lcd.write("Record")
+    sleep(5)
+    pager.display()
+
+def standby(pager):
+    lcd.clear()
+    lcd.write("Standby")
+    sleep(5)
+    pager.display()
+
 
 def createPagesForScreen():
-    pages = [{"text": "This is page 1",
-              "actions": [{"label": "A", "action": "pager_example.actionA"}, {"label": "B", "action": "pager_example.actionB"},
-                          {"label": "C", "action": "pager_example.actionC"}, {"label": "D", "action": "pager_example.actionD"},
+    bitmaps = {"play": [0x0, 0x8, 0xc, 0xe, 0xc, 0x8, 0x0, 0x0],
+               "pause": [0x0, 0xa, 0xa, 0xa, 0xa, 0xa, 0x0, 0x0],
+               "stop": [0x0, 0xe, 0xe, 0xe, 0xe, 0xe, 0x0, 0x0],
+               "record": [0x0, 0xe, 0x1f, 0x1f, 0x1f, 0xe, 0x0, 0x0],
+               "standby": [0x4, 0xe, 0x15, 0x15, 0x11, 0xe, 0x0, 0x0]}
+
+    pages = [{"text": "P0 (labels)",
+              "actions": [{"label": "A", "action": "pager_example.actionA"},
+                          {"label": "B", "action": "pager_example.actionB"},
+                          {"label": "C", "action": "pager_example.actionC"},
+                          {"label": "D", "action": "pager_example.actionD"},
                           {"label": "E", "action": "pager_example.actionE"}]},
-             {"text": "This is page 2",
-              "actions": [{"label": "F", "action": "pager_example.actionA"}, {"label": "G", "action": "pager_example.actionB"},
-                          {"label": "H", "action": "pager_example.actionC"}, {"label": "I", "action": "pager_example.actionD"},
-                          {"label": "J", "action": "pager_example.actionE"}]}
+             {"text": "P1 (bitmaps)",
+              "actions": [{"bitmap": bitmaps["play"], "action": "pager_example.play"},
+                          {"bitmap": bitmaps["pause"], "action": "pager_example.pause"},
+                          {"bitmap": bitmaps["stop"], "action": "pager_example.stop"},
+                          {"bitmap": bitmaps["record"], "action": "pager_example.record"},
+                          {"bitmap": bitmaps["standby"], "action": "pager_example.standby"}]},
+             {"text": "P2 with no actions",
+              "actions": []},
+             {"text": "P3 (less actions)",
+              "actions": [{"label": "A", "action": "pager_example.actionA"},
+                          {"label": "B", "action": "pager_example.actionB"},
+                          {"label": "C", "action": "pager_example.actionC"}]}
              ]
     return pages
 
@@ -58,10 +108,15 @@ def createPagesForScreen():
 if __name__ == '__main__':
 
     screen1 = PagedScreen(cad=cad, pages=createPagesForScreen())
-    # screen2 = PagedScreen(lcd=lcd, pages=getPagesForScreen2())
-    screen1.display(page=0)
+
     try:
-        while True:
-            sleep(0.1)
+        lcd.backlight_on()
+        screen1.display(page=0)
+        end_barrier.wait()
     except KeyboardInterrupt:
         screen1.clean_up()
+        cad.lcd.write("Goodbye")
+        sleep(2)
+        cad.lcd.clear()
+        cad.lcd.backlight_off()
+        cad.lcd.cursor_off()
