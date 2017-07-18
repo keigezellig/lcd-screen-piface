@@ -61,3 +61,6 @@ Displays page pageno (0 based)
 `screen1.clean_up()`
 
 Cleans up resources (needs **always** to be called after finishing the application)
+
+## Live example
+[![Example](https://img.youtube.com/vi/cJd8QzbMm24/0.jpg)](http://www.youtube.com/watch?v=cJd8QzbMm24)
