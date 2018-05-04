@@ -198,5 +198,5 @@ if __name__ == '__main__':
     btn_0.connect(display_ip)
     btn_1.connect(display_time)
 
-    display_ip()
+    pageController.set_active_page(0)
     piFaceController.init()
