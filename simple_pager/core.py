@@ -176,11 +176,11 @@ def get_my_ip():
     return run_cmd(GET_IP_CMD)[:-1]
 
 
-def display_ip():
+def display_ip(sender):
     pageController.set_active_page(0)
 
 
-def display_time():
+def display_time(sender):
     pageController.set_active_page(1)
 
 
