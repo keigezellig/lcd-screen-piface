@@ -1,9 +1,28 @@
 import datetime
+import threading
 from time import sleep
 
 import pifacecad
 import subprocess
 from blinker import signal
+
+
+class IntervalTimer(threading.Thread):
+    def __init__(self, interval_in_seconds, function):
+        super().__init__()
+        self._isStopped = threading.Event()
+        self._interval_in_seconds = interval_in_seconds
+        self._timer_function = function
+
+    def run(self):
+        while not self._isStopped.is_set():
+            sleep(self._interval_in_seconds)
+            self._timer_function()
+
+        self._isStopped.clear()
+
+    def stop(self):
+        self._isStopped.set()
 
 
 class Page:
@@ -182,8 +201,13 @@ def display_ip(sender):
     pageController.set_active_page(0)
 
 
-def display_time(sender):
+def display_time(sender=None):
     pageController.set_active_page(1)
+
+def update_time(sender=None):
+    updated_text = signal('text_updated')
+    curr_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    updated_text.send(sender=None, id=0, text=["Current time", curr_time])
 
 
 if __name__ == '__main__':
@@ -199,6 +223,9 @@ if __name__ == '__main__':
 
     btn_0.connect(display_ip)
     btn_1.connect(display_time)
+
+    timer = IntervalTimer(interval_in_seconds=1, function=update_time)
+    timer.start()
 
     pageController.set_active_page(0)
     piFaceController.init()
