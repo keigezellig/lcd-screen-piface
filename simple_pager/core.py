@@ -37,7 +37,7 @@ class PageController:
         self.__active_page_id = id
         self.__page_changed.send(self, page=new)
 
-    def __on_text_updated(self, **kw):
+    def __on_text_updated(self, sender, **kw):
         page_id = kw['id']
         text = kw['text']
 
@@ -53,7 +53,7 @@ class DisplayController:
         self.__page_changed = signal('page_changed')
         self.__page_changed.connect(self.__display_page)
 
-    def __display_page(self, **kw):
+    def __display_page(self, sender, **kw):
         text = kw['page'].lines
         self.__lcd.display_text(textlines=text, location=None, should_clear=False)
 
