@@ -224,8 +224,8 @@ if __name__ == '__main__':
     btn_0.connect(display_ip)
     btn_1.connect(display_time)
 
-    # timer = IntervalTimer(interval_in_seconds=1, function=update_time)
-    # timer.start()
+    timer = IntervalTimer(interval_in_seconds=1, function=update_time)
+    timer.start()
 
     pageController.set_active_page(0)
     piFaceController.init()
