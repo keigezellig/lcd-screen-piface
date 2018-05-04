@@ -56,7 +56,7 @@ class PageController:
         self.__active_page_id = id
         self.__page_changed.send(self, page=new, clear=True)
 
-    def __on_text_updated(self, **kw):
+    def __on_text_updated(self, sender, **kw):
         page_id = kw['id']
         text = kw['text']
 
@@ -197,11 +197,11 @@ def get_my_ip():
     return run_cmd(GET_IP_CMD)[:-1]
 
 
-def display_ip():
+def display_ip(sender):
     pageController.set_active_page(0)
 
 
-def display_time():
+def display_time(sender):
     pageController.set_active_page(1)
 
 def update_time():
