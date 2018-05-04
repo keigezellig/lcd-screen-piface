@@ -74,7 +74,7 @@ class DisplayController:
 
     def __display_page(self, sender, **kw):
         text = kw['page'].lines
-        self.__lcd.display_text(textlines=text, location=None, should_clear=kw['clear'])
+        self.__lcd.display_text(textlines=text, location=None, should_clear=True)
 
 
 
