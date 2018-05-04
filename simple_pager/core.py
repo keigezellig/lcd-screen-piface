@@ -197,14 +197,14 @@ def get_my_ip():
     return run_cmd(GET_IP_CMD)[:-1]
 
 
-def display_ip(sender):
+def display_ip():
     pageController.set_active_page(0)
 
 
-def display_time(sender=None):
+def display_time():
     pageController.set_active_page(1)
 
-def update_time(sender=None):
+def update_time():
     updated_text = signal('text_updated')
     curr_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     updated_text.send(sender=None, id=0, text=["Current time", curr_time])
@@ -224,8 +224,8 @@ if __name__ == '__main__':
     btn_0.connect(display_ip)
     btn_1.connect(display_time)
 
-    timer = IntervalTimer(interval_in_seconds=1, function=update_time)
-    timer.start()
+    # timer = IntervalTimer(interval_in_seconds=1, function=update_time)
+    # timer.start()
 
     pageController.set_active_page(0)
     piFaceController.init()
