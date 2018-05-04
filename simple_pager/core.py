@@ -56,7 +56,7 @@ class PageController:
         self.__active_page_id = id
         self.__page_changed.send(self, page=new, clear=True)
 
-    def __on_text_updated(self, sender, **kw):
+    def __on_text_updated(self, **kw):
         page_id = kw['id']
         text = kw['text']
 
@@ -207,7 +207,7 @@ def display_time(sender=None):
 def update_time(sender=None):
     updated_text = signal('text_updated')
     curr_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    updated_text.send(sender=None, id=0, text=["Current time", curr_time])
+    updated_text.send(id=0, text=["Current time", curr_time])
 
 
 if __name__ == '__main__':
