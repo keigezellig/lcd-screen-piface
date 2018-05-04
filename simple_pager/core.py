@@ -33,20 +33,18 @@ class PageController:
         self.__pages.append(page)
 
     def set_active_page(self, id):
-        old = self.__pages[self.__active_page_id]
         new = self.__pages[id]
         self.__active_page_id = id
-        self.__page_changed.send(self, old=old, new=new)
+        self.__page_changed.send(self, page=new)
 
     def __on_text_updated(self, **kw):
         page_id = kw['id']
         text = kw['text']
 
-        old = self.__pages[page_id]
         self.__pages[page_id].lines = text
         new = self.__pages[page_id]
         if self.__active_page_id == page_id:
-            self.__page_changed.send(self, old=old, new=new)
+            self.__page_changed.send(self, page=new)
 
 
 class DisplayController:
@@ -56,8 +54,8 @@ class DisplayController:
         self.__page_changed.connect(self.__display_page)
 
     def __display_page(self, **kw):
-        newtext = kw['new']
-        self.__lcd.display_text(textlines=newtext, location=None, should_clear=False)
+        text = kw['page'].lines
+        self.__lcd.display_text(textlines=text, location=None, should_clear=False)
 
 
 class PiFaceController:
