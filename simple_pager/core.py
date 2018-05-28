@@ -1,30 +1,10 @@
-import datetime
-import os
-import subprocess
-import threading
+import logging
 from time import sleep
 
 import pifacecad
 from blinker import signal
 
-
-class IntervalTimer(threading.Thread):
-    def __init__(self, interval_in_seconds, function):
-        super().__init__()
-        self._isStopped = threading.Event()
-        self._interval_in_seconds = interval_in_seconds
-        self._timer_function = function
-
-    def run(self):
-        while not self._isStopped.is_set():
-            sleep(self._interval_in_seconds)
-            self._timer_function()
-
-        self._isStopped.clear()
-
-    def stop(self):
-        self._isStopped.set()
-
+logger = logging.getLogger(__name__)
 
 class Page:
     def __init__(self):
@@ -59,11 +39,9 @@ class PageController:
                                            should_clear=should_clear)
 
     def goto_next_page(self):
-        print("next: current {}".format(self.__active_page_id))
         self.set_active_page(id=(self.__active_page_id + 1) % len(self.__pages))
 
     def goto_previous_page(self):
-        print("prev: current {}".format(self.__active_page_id))
         if self.__active_page_id >= 1:
             self.set_active_page(id=self.__active_page_id - 1)
         else:
@@ -200,83 +178,13 @@ class PiFaceController:
         elif button == self.ROCKER_RIGHT:
             signal_name = 'rocker_right_pressed'
 
-
         if signal_name == '':
-            print("invalid button")
-
-        print(signal_name)
+            logger.warning("Invalid button argument, will do nothing")
 
         signal(name=signal_name).connect(handler)
 
 
-GET_IP_CMD = "hostname --all-ip-addresses"
-curr_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-
-
-def run_cmd(cmd):
-    return subprocess.check_output(cmd, shell=True).decode('utf-8')
-
-
-def get_my_ip():
-    return run_cmd(GET_IP_CMD)[:-1]
-
-
-def display_ip(sender):
-    pageController.set_active_page(0)
-
-
-def display_time(sender):
-    pageController.set_active_page(1)
-
-
-def display_sample(sender):
-    pageController.set_active_page(2)
-
-
-def change_text(sender):
-    pageController.update_text(page_id=2, new_lines=["Changed text", "to something else"])
-
-
-def next_page(sender):
-    pageController.goto_next_page()
-
-
-def previous_page(sender):
-    pageController.goto_previous_page()
-
-
-def home_page(sender):
-    pageController.set_active_page(0)
-
-
-def reboot(sender):
-    piFaceController.display_text(textlines=["Rebooting in 5 secs"], location=None, should_clear=True)
-    sleep(5)
-    piFaceController.clear()
-    piFaceController.backlight_off()
-    os.system("sudo reboot")
-
-
 if __name__ == '__main__':
-    piFaceController = PiFaceController()
-    pageController = PageController(lcd_controller=piFaceController)
+    from simple_pager import example
 
-    pageController.add_page(["IP: {ip}".format(ip=get_my_ip()), "S/W: 3.0.323234a"])
-    pageController.add_page(["Current time", curr_time])
-    pageController.add_page(["Sample text"])
-
-    piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_0, handler=display_ip)
-    piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_1, handler=display_time)
-    piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_2, handler=display_sample)
-    piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_3, handler=change_text)
-    piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_4, handler=reboot)
-    piFaceController.set_button_eventhandler(button=piFaceController.ROCKER_LEFT, handler=previous_page)
-    piFaceController.set_button_eventhandler(button=piFaceController.ROCKER_RIGHT, handler=next_page)
-    piFaceController.set_button_eventhandler(button=piFaceController.ROCKER_PRESS, handler=home_page)
-
-    piFaceController.display_scrolling_text(textlines=["Welcome to Acme LCD"], direction="right",
-                                            number_of_positions=22,
-                                            delay=.1)
-
-    piFaceController.init()
-    pageController.set_active_page(0)
+    example.run_example()
