@@ -185,6 +185,6 @@ class PiFaceController:
 
 
 if __name__ == '__main__':
-    from simple_pager import example
+    from .example import run_example
 
-    example.run_example()
+    run_example()
