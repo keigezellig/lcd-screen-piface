@@ -67,7 +67,7 @@ class PageController:
         if self.__active_page_id > 1:
             self.set_active_page(id=self.__active_page_id - 1)
         else:
-            self.set_active_page(id=len(self.__pages))
+            self.set_active_page(id=len(self.__pages) - 1)
 
     def update_text(self, page_id, new_lines):
         self.__pages[page_id].lines = new_lines
