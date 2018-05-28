@@ -2,6 +2,7 @@ import datetime
 import threading
 from time import sleep
 
+import os
 import pifacecad
 import subprocess
 from blinker import signal
@@ -54,13 +55,13 @@ class PageController:
         self.__display_page(page_id=self.__active_page_id, should_clear=True)
 
     def __display_page(self, page_id, should_clear):
-        self.__lcd_controller.display_text(textlines=self.__pages[page_id].lines, location=None, should_clear=should_clear)
+        self.__lcd_controller.display_text(textlines=self.__pages[page_id].lines, location=None,
+                                           should_clear=should_clear)
 
     def update_text(self, page_id, new_lines):
         self.__pages[page_id].lines = new_lines
         if self.__active_page_id == page_id:
             self.__display_page(page_id=self.__active_page_id, should_clear=False)
-
 
 
 class PiFaceController:
@@ -194,9 +195,6 @@ class PiFaceController:
         signal(name=signal_name).connect(handler)
 
 
-
-
-
 GET_IP_CMD = "hostname --all-ip-addresses"
 curr_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
@@ -216,9 +214,21 @@ def display_ip(sender):
 def display_time(sender):
     pageController.set_active_page(1)
 
-def update_time():
-    curr_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    pageController.update_text(page_id=1, new_lines=["Current time", curr_time])
+
+def display_sample(sender):
+    pageController.set_active_page(2)
+
+
+def change_text(sender):
+    pageController.update_text(page_id=2, new_lines=["Changed text", "to something else"])
+
+
+def reboot(sender):
+    piFaceController.display_text(textlines=["Rebooting in 5 secs"], location=None, should_clear=True)
+    sleep(5)
+    piFaceController.clear()
+    piFaceController.backlight_off()
+    os.system("sudo reboot")
 
 
 if __name__ == '__main__':
@@ -227,16 +237,17 @@ if __name__ == '__main__':
 
     pageController.add_page(["IP: {ip}".format(ip=get_my_ip()), "S/W: 3.0.323234a"])
     pageController.add_page(["Current time", curr_time])
+    pageController.add_page(["Sample text"])
 
     piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_0, handler=display_ip)
     piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_1, handler=display_time)
+    piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_2, handler=display_sample)
+    piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_3, handler=change_text)
+    piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_4, handler=reboot)
 
-
-    timer = IntervalTimer(interval_in_seconds=1, function=update_time)
-
-    piFaceController.display_scrolling_text(textlines=["Welcome to Triptracker"], direction="right", number_of_positions=22,
-                           delay=.3)
+    piFaceController.display_scrolling_text(textlines=["Welcome to Triptracker"], direction="right",
+                                            number_of_positions=22,
+                                            delay=.3)
 
     piFaceController.init()
-    timer.start()
     pageController.set_active_page(0)
