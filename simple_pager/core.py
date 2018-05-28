@@ -117,7 +117,7 @@ class PiFaceController:
         if len(textlines[0]) < 16:
             textlines[0] = '{:16}'.format(textlines[0])
 
-        if len(textlines[1]) < 16:
+        if len(textlines) == 2 and len(textlines[1]) < 16:
             textlines[1] = '{:16}'.format(textlines[1])
 
         lcd = self.__piface.lcd
@@ -209,11 +209,11 @@ def get_my_ip():
     return run_cmd(GET_IP_CMD)[:-1]
 
 
-def display_ip():
+def display_ip(sender):
     pageController.set_active_page(0)
 
 
-def display_time():
+def display_time(sender):
     pageController.set_active_page(1)
 
 def update_time():
@@ -232,7 +232,7 @@ if __name__ == '__main__':
     piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_1, handler=display_time)
 
 
-    timer = IntervalTimer(interval_in_seconds=60, function=update_time)
+    timer = IntervalTimer(interval_in_seconds=1, function=update_time)
 
     piFaceController.display_scrolling_text(textlines=["Welcome to Triptracker"], direction="right", number_of_positions=22,
                            delay=.3)
