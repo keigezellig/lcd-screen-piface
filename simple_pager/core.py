@@ -1,10 +1,10 @@
 import datetime
+import os
+import subprocess
 import threading
 from time import sleep
 
-import os
 import pifacecad
-import subprocess
 from blinker import signal
 
 
@@ -57,6 +57,15 @@ class PageController:
     def __display_page(self, page_id, should_clear):
         self.__lcd_controller.display_text(textlines=self.__pages[page_id].lines, location=None,
                                            should_clear=should_clear)
+
+    def goto_next_page(self):
+        self.__active_page_id = (self.__active_page_id + 1) % len(self.__pages)
+
+    def goto_previous_page(self):
+        if self.__active_page_id > 1:
+            self.__active_page_id = self.__active_page_id - 1
+        else:
+            self.__active_page_id = len(self.__pages) - 1
 
     def update_text(self, page_id, new_lines):
         self.__pages[page_id].lines = new_lines
@@ -223,6 +232,14 @@ def change_text(sender):
     pageController.update_text(page_id=2, new_lines=["Changed text", "to something else"])
 
 
+def next_page(sender):
+    pageController.goto_next_page()
+
+
+def previous_page(sender):
+    pageController.goto_previous_page()
+
+
 def reboot(sender):
     piFaceController.display_text(textlines=["Rebooting in 5 secs"], location=None, should_clear=True)
     sleep(5)
@@ -244,6 +261,8 @@ if __name__ == '__main__':
     piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_2, handler=display_sample)
     piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_3, handler=change_text)
     piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_4, handler=reboot)
+    piFaceController.set_button_eventhandler(button=piFaceController.ROCKER_LEFT, handler=previous_page)
+    piFaceController.set_button_eventhandler(button=piFaceController.ROCKER_RIGHT, handler=next_page)
 
     piFaceController.display_scrolling_text(textlines=["Welcome to Triptracker"], direction="right",
                                             number_of_positions=22,
