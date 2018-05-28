@@ -59,11 +59,11 @@ class PageController:
                                            should_clear=should_clear)
 
     def goto_next_page(self):
-        print("next")
+        print("next: current {}".format(self.__active_page_id))
         self.set_active_page(id=(self.__active_page_id + 1) % len(self.__pages))
 
     def goto_previous_page(self):
-        print("prev")
+        print("prev: current {}".format(self.__active_page_id))
         if self.__active_page_id > 1:
             self.set_active_page(id=self.__active_page_id - 1)
         else:
