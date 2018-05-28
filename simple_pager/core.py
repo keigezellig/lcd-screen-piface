@@ -191,7 +191,7 @@ class PiFaceController:
 
     def set_button_eventhandler(self, button, handler):
         signal_name = ''
-        if button >= self.BUTTON_0 or button <= self.BUTTON_4:
+        if self.BUTTON_0 <= button <= self.BUTTON_4:
             signal_name = 'button{button}_pressed'.format(button=button)
         elif button == self.ROCKER_PRESS:
             signal_name = 'rocker_pressed'
