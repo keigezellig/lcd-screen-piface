@@ -182,9 +182,3 @@ class PiFaceController:
             logger.warning("Invalid button argument, will do nothing")
 
         signal(name=signal_name).connect(handler)
-
-
-if __name__ == '__main__':
-    from .example import run_example
-
-    run_example()
