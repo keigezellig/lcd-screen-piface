@@ -59,13 +59,13 @@ class PageController:
                                            should_clear=should_clear)
 
     def goto_next_page(self):
-        self.__active_page_id = (self.__active_page_id + 1) % len(self.__pages)
+        self.__display_page(page_id=(self.__active_page_id + 1) % len(self.__pages), should_clear=True)
 
     def goto_previous_page(self):
         if self.__active_page_id > 1:
-            self.__active_page_id = self.__active_page_id - 1
+            self.__display_page(page_id=self.__active_page_id - 1, should_clear=True)
         else:
-            self.__active_page_id = len(self.__pages) - 1
+            self.__display_page(page_id=len(self.__pages) - 1, should_clear=True)
 
     def update_text(self, page_id, new_lines):
         self.__pages[page_id].lines = new_lines
