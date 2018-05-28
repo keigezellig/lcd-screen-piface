@@ -8,8 +8,6 @@ from simple_pager import PiFaceController, PageController
 GET_IP_CMD = "hostname --all-ip-addresses"
 curr_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
-piFaceController = PiFaceController()
-pageController = PageController(lcd_controller=piFaceController)
 
 
 def run_cmd(cmd):
@@ -57,6 +55,8 @@ def reboot(sender):
 
 
 if __name__ == '__main__':
+    piFaceController = PiFaceController()
+    pageController = PageController(lcd_controller=piFaceController)
     pageController.add_page(["IP: {ip}".format(ip=get_my_ip()), "S/W: 3.0.323234a"])
     pageController.add_page(["Current time", curr_time])
     pageController.add_page(["Sample text"])
