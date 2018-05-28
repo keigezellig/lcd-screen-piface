@@ -200,6 +200,7 @@ class PiFaceController:
         elif button == self.ROCKER_RIGHT:
             signal_name = 'rocker_right_pressed'
 
+
         if signal_name == '':
             print("invalid button")
 
@@ -244,6 +245,10 @@ def previous_page(sender):
     pageController.goto_previous_page()
 
 
+def home_page(sender):
+    pageController.set_active_page(0)
+
+
 def reboot(sender):
     piFaceController.display_text(textlines=["Rebooting in 5 secs"], location=None, should_clear=True)
     sleep(5)
@@ -267,10 +272,11 @@ if __name__ == '__main__':
     piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_4, handler=reboot)
     piFaceController.set_button_eventhandler(button=piFaceController.ROCKER_LEFT, handler=previous_page)
     piFaceController.set_button_eventhandler(button=piFaceController.ROCKER_RIGHT, handler=next_page)
+    piFaceController.set_button_eventhandler(button=piFaceController.ROCKER_PRESS, handler=home_page)
 
-    piFaceController.display_scrolling_text(textlines=["Welcome to Triptracker"], direction="right",
+    piFaceController.display_scrolling_text(textlines=["Welcome to Acme LCD"], direction="right",
                                             number_of_positions=22,
-                                            delay=.3)
+                                            delay=.1)
 
     piFaceController.init()
     pageController.set_active_page(0)
