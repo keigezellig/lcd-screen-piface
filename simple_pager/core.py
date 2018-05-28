@@ -64,7 +64,7 @@ class PageController:
 
     def goto_previous_page(self):
         print("prev: current {}".format(self.__active_page_id))
-        if self.__active_page_id > 1:
+        if self.__active_page_id >= 1:
             self.set_active_page(id=self.__active_page_id - 1)
         else:
             self.set_active_page(id=len(self.__pages) - 1)
