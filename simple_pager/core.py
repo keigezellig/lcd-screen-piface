@@ -39,12 +39,10 @@ class Page:
 
 
 class PageController:
-    def __init__(self):
+    def __init__(self, lcd_controller):
         self.__pages = []
         self.__active_page_id = None
-        self.__page_changed = signal('page_changed')
-        self.__text_updated = signal('text_updated')
-        self.__text_updated.connect(self.__on_text_updated)
+        self.__lcd_controller = lcd_controller
 
     def add_page(self, lines):
         page = Page()
@@ -52,30 +50,16 @@ class PageController:
         self.__pages.append(page)
 
     def set_active_page(self, id):
-        new = self.__pages[id]
         self.__active_page_id = id
-        self.__page_changed.send(self, page=new, clear=True)
+        self.__display_page(page_id=self.__active_page_id, should_clear=True)
 
-    def __on_text_updated(self, sender, **kw):
-        page_id = kw['id']
-        text = kw['text']
+    def __display_page(self, page_id, should_clear):
+        self.__lcd_controller.display_text(textlines=self.__pages[page_id].lines, location=None, should_clear=should_clear)
 
-        self.__pages[page_id].lines = text
-        new = self.__pages[page_id]
+    def update_text(self, page_id, new_lines):
+        self.__pages[page_id].lines = new_lines
         if self.__active_page_id == page_id:
-            self.__page_changed.send(self, page=new, clear=False)
-
-
-class DisplayController:
-    def __init__(self, lcd):
-        self.__lcd = lcd
-        self.__page_changed = signal('page_changed')
-        self.__page_changed.connect(self.__display_page)
-
-    def __display_page(self, sender, **kw):
-        text = kw['page'].lines
-        self.__lcd.display_text(textlines=text, location=None, should_clear=True)
-
+            self.__display_page(page_id=self.__active_page_id, should_clear=False)
 
 
 
@@ -184,6 +168,34 @@ class PiFaceController:
 
             lcd.home()
 
+    def backlight_on(self):
+        self.__piface.lcd.backlight_on()
+
+    def backlight_off(self):
+        self.__piface.lcd.backlight_off()
+
+    def clear(self):
+        self.__piface.lcd.clear()
+
+    def set_button_eventhandler(self, button, handler):
+        signal_name = ''
+        if button >= self.BUTTON_0 or button <= self.BUTTON_4:
+            signal_name = 'button{button}_pressed'.format(button=button)
+        elif button == self.ROCKER_PRESS:
+            signal_name = 'rocker_pressed'
+        elif button == self.ROCKER_LEFT:
+            signal_name = 'rocker_left_pressed'
+        elif button == self.ROCKER_RIGHT:
+            signal_name = 'rocker_right_pressed'
+
+        if signal_name == '':
+            print("invalid button")
+
+        signal(name=signal_name).connect(handler)
+
+
+
+
 
 GET_IP_CMD = "hostname --all-ip-addresses"
 curr_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -197,35 +209,34 @@ def get_my_ip():
     return run_cmd(GET_IP_CMD)[:-1]
 
 
-def display_ip(sender):
+def display_ip():
     pageController.set_active_page(0)
 
 
-def display_time(sender):
+def display_time():
     pageController.set_active_page(1)
 
 def update_time():
-    updated_text = signal('text_updated')
     curr_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    updated_text.send(None, id=1, text=["Current time", curr_time])
+    pageController.update_text(page_id=1, new_lines=["Current time", curr_time])
 
 
 if __name__ == '__main__':
     piFaceController = PiFaceController()
-    displayController = DisplayController(lcd=piFaceController)
-    pageController = PageController()
+    pageController = PageController(lcd_controller=piFaceController)
 
     pageController.add_page(["IP: {ip}".format(ip=get_my_ip()), "S/W: 3.0.323234a"])
     pageController.add_page(["Current time", curr_time])
 
-    btn_0 = signal('button0_pressed')
-    btn_1 = signal('button1_pressed')
+    piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_0, handler=display_ip)
+    piFaceController.set_button_eventhandler(button=piFaceController.BUTTON_1, handler=display_time)
 
-    btn_0.connect(display_ip)
-    btn_1.connect(display_time)
 
-    timer = IntervalTimer(interval_in_seconds=1, function=update_time)
-    timer.start()
+    timer = IntervalTimer(interval_in_seconds=60, function=update_time)
 
-    pageController.set_active_page(0)
+    piFaceController.display_scrolling_text(textlines=["Welcome to Triptracker"], direction="right", number_of_positions=22,
+                           delay=.3)
+
     piFaceController.init()
+    timer.start()
+    pageController.set_active_page(0)
