@@ -56,7 +56,7 @@ def reboot(sender):
     os.system("sudo reboot")
 
 
-def run_example():
+if __name__ == '__main__':
     pageController.add_page(["IP: {ip}".format(ip=get_my_ip()), "S/W: 3.0.323234a"])
     pageController.add_page(["Current time", curr_time])
     pageController.add_page(["Sample text"])
