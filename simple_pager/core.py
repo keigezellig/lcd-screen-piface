@@ -203,6 +203,8 @@ class PiFaceController:
         if signal_name == '':
             print("invalid button")
 
+        print(signal_name)
+
         signal(name=signal_name).connect(handler)
 
 
