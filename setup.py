@@ -4,7 +4,7 @@ setup(
     name='lcd-screen-piface',
     version='1.0.0',
     packages=['pager', 'simple_pager'],
-    install_requires=['blinker',
+    install_requires=['blinker==1.4',
     'pifacecad',
     'pifacecommon',
     'python-lirc==1.2.1'],
