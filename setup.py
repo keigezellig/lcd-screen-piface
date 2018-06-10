@@ -7,7 +7,7 @@ setup(
     install_requires=['blinker',
     'git+https://github.com/piface/pifacecad/#egg=pifacecad',
     'git+https://github.com/piface/pifacecommon/#egg=pifacecommon',
-    'python-lirc==1.2.1']
+    'python-lirc==1.2.1'],
     url='https://github.com/keigezellig/lcd-screen-piface',
     license='THE APPRECIATION LICENSE',
     author='M. Joosten',
