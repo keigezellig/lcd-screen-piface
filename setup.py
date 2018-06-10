@@ -9,7 +9,7 @@ setup(
     'pifacecommon',
     'python-lirc==1.2.1'],
 
-    dependency_links=['https://github.com/piface/pifacecad/#egg=pifacecad-dev','https://github.com/piface/pifacecommon/#egg=pifacecommon-dev'],
+    dependency_links=['https://github.com/piface/pifacecad/#egg=pifacecad-2.0.8','https://github.com/piface/pifacecommon/#egg=pifacecommon-2.0.8'],
     url='https://github.com/keigezellig/lcd-screen-piface',
     license='THE APPRECIATION LICENSE',
     author='M. Joosten',
