@@ -5,9 +5,16 @@ setup(
     version='1.0.0',
     packages=['pager', 'simple_pager'],
     install_requires=['blinker',
-    'pifacecad@git+https://github.com/piface/pifacecad.git',
-    'pifacecommon@git+https://github.com/piface/pifacecommon.git',
-    'python-lirc==1.2.1'],
+    'pifacecad',
+    'pifacecommon',
+    'python-lirc==1.2.1']
+
+    dependency_links=[
+        'git+https://github.com/piface/pifacecad/#egg=pifacecad',
+        'git+https://github.com/piface/pifacecommon/#egg=pifacecommon',
+        
+
+    ])
     url='https://github.com/keigezellig/lcd-screen-piface',
     license='THE APPRECIATION LICENSE',
     author='M. Joosten',
