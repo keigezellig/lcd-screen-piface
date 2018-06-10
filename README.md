@@ -2,7 +2,8 @@
 Some modules to create screens more easily for a Piface CAD 2
 
 
-- [Pager](/pager): A screen consisting of multiple pages with assignable actions to the PifaceCAD buttons
+- [Pager](/pager): A screen consisting of multiple pages with an action bar.
+- [Simple pager](/simple_pager): A simpler pager which doesn't have the concept of an 'action bar' as in the normal pager
 
 ## Usage in your own projects
 See the examples
@@ -13,3 +14,4 @@ See the examples
 - Install the Piface CAD libraries on the Rpi (see [here](https://github.com/piface/pifacecad/))
 - Run `make env` to make an virtual environment which installs all necessary python dependencies
 - Run an example by executing `python3 *_example` on the Pi where * is for example `pager`
+
