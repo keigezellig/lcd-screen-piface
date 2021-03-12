@@ -36,9 +36,10 @@ class PiFaceController:
         self.__rocker_right_pressed = signal('rocker_right_pressed')
 
     def start(self):
-        self._worker.get_lcd().init_key_listener(self._handle_button)
+        log.info("Starting PifaceController")
+        self._worker.get_lcd().setup_key_listener(self._handle_button)
         self._worker.setup()
-        threading.Thread(target=self._worker.process_lcd_commands, daemon=True).start()
+        threading.Thread(target=self._worker.start, daemon=True).start()
 
     def _handle_button(self, button: int):
         if button == self.BUTTON_0:
@@ -125,4 +126,5 @@ class PiFaceController:
         self._worker.schedule_command(item)
 
     def close(self):
-        self._worker.close()
+        log.info("Stopping PifaceController")
+        self._worker.stop()

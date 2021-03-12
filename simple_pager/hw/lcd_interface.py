@@ -7,13 +7,13 @@ log = logging.getLogger(__name__)
 
 class LcdInterface(metaclass=abc.ABCMeta):
     def setup(self):
-        pass
+        log.info("Setting up LCD interface")
 
     def close(self):
-        pass
+        log.info("Closing LCD interface")
 
-    def init_key_listener(self, key_handler: Callable[[int], None]):
-        pass
+    def setup_key_listener(self, key_handler: Callable[[int], None]):
+        log.info("Setting up keys")
 
     @abc.abstractmethod
     def display_text(self, text_lines: List[str], location: Tuple[int, int], should_clear: bool):

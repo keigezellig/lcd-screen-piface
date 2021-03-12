@@ -1,14 +1,7 @@
 import logging
-import sys
-import threading
 from queue import Queue
 from time import sleep
-from typing import Any, Dict, List, Tuple
-
-import pifacecad
-
-# SUPPORTED_COMMANDS = ['display_text', 'scroll_left', 'scroll_right', 'home', 'display_scrolling_text', 'clear']
-from pifacecad import PiFaceCAD
+from typing import Any, Dict, Tuple
 
 from simple_pager.hw.lcd_interface import LcdInterface
 
@@ -33,55 +26,54 @@ class LCDWorker:
     def schedule_command(self, message: Tuple[str, Dict[str, Any]]):
         self._queue.put(message)
 
-    def process_lcd_commands(self):
+    def start(self):
+        log.debug("Starting lcd command processing thread")
         while True:
             # Get command and parameters from queue
-            command: str = ""
-            parameters: Dict[str, Any] = {}
-            command, parameters = self._queue.get()
-            # if command not in SUPPORTED_COMMANDS:
-            #     log.warning(f"Command {command} not supported.")
-            #     self._queue.task_done()
+            command: str
+            parameters: Dict[str, Any]
 
+            command, parameters = self._queue.get()
             try:
                 # Get correct method out of command
-
+                lcd_method = getattr(self._lcd.__class__, command)
                 # Execute command
                 if command == 'display_text':
-                    self._lcd.display_text(parameters['text_lines'], parameters['location'], parameters['should_clear'])
+                    lcd_method(self._lcd, parameters['text_lines'], parameters['location'], parameters['should_clear'])
                 elif command == 'scroll_left':
-                    self._lcd.scroll_left(parameters['number_of_positions'])
+                    lcd_method(self._lcd, parameters['number_of_positions'])
                 elif command == 'scroll_right':
-                    self._lcd.scroll_right(parameters['number_of_positions'])
+                    lcd_method(self._lcd, parameters['number_of_positions'])
                 elif command == 'display_scrolling_text':
-                    self._lcd.display_scrolling_text(parameters['text_lines'], parameters['direction'],
+                    lcd_method(self._lcd, parameters['text_lines'], parameters['direction'],
                                                      parameters['number_of_positions'], parameters['delay'])
                 elif command == 'home':
-                    self._lcd.home()
+                    lcd_method(self._lcd)
                 elif command == 'clear':
-                    self._lcd.clear()
+                    lcd_method(self._lcd)
                 elif command == 'backlight_on':
-                    self._lcd.backlight_on()
+                    lcd_method(self._lcd)
                 elif command == 'backlight_off':
-                    self._lcd.backlight_off()
+                    lcd_method(self._lcd)
                 elif command == 'cursor_on':
-                    self._lcd.cursor_on()
+                    lcd_method(self._lcd)
                 elif command == 'cursor_off':
-                    self._lcd.cursor_off()
+                    lcd_method(self._lcd)
                 elif command == 'blink_on':
-                    self._lcd.blink_on()
+                    lcd_method(self._lcd)
                 elif command == 'blink_off':
-                    self._lcd.blink_off()
+                    lcd_method(self._lcd)
                 else:
                     log.warning(f"Command {command} not implemented")
             except Exception as e:
-                log.error(f"Unexpected error: {e}", exc_info=True)
+                log.error(f"Error: {e}", exc_info=True)
             finally:
                 sleep(self._delay_between_processing_messages)
                 self._queue.task_done()
 
             log.debug(f"Q-size: {self._queue.qsize()}")
 
-    def close(self):
+    def stop(self):
+        log.info("Stopping lcd command processing thread")
         self._queue.join()
         self._lcd.close()

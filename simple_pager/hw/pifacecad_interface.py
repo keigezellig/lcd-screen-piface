@@ -27,8 +27,8 @@ class PiFaceCadInterface(LcdInterface):
         if self._key_listener:
             self._key_listener.deactivate()
 
-    def init_key_listener(self, key_handler: Callable[[int], None]):
-        super().init_key_listener(key_handler=key_handler)
+    def setup_key_listener(self, key_handler: Callable[[int], None]):
+        super().setup_key_listener(key_handler=key_handler)
 
         self._key_handler = key_handler
         self._key_listener = pifacecad.SwitchEventListener(chip=self._pi_face)
@@ -39,6 +39,7 @@ class PiFaceCadInterface(LcdInterface):
         self._key_listener.activate()
 
     def _handle_button_press(self, event):
+        log.debug(f"Button {event.pin_num} pressed")
         self._key_handler(event.pin_num)
 
     def display_text(self, text_lines: List[str], location: Optional[Tuple[int, int]], should_clear: bool):
