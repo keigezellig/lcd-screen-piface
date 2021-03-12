@@ -3,7 +3,7 @@ from queue import Queue
 from time import sleep
 from typing import Any, Dict, Tuple
 
-from simple_pager.hw.lcd_interface import LcdInterface
+from lcd_control.hw.lcd_interface import LcdInterface
 
 log = logging.getLogger(__name__)
 

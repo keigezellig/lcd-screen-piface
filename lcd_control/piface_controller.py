@@ -1,12 +1,11 @@
 import logging
 import threading
-from queue import Queue
 from typing import List, Tuple
 
 from blinker import signal
 
-from simple_pager.hw.lcd_interface import LcdInterface
-from simple_pager.lcd_worker import LCDWorker
+from lcd_control.hw.lcd_interface import LcdInterface
+from lcd_control.lcd_worker import LCDWorker
 
 log = logging.getLogger(__name__)
 

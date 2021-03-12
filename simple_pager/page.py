@@ -1,13 +1,4 @@
 import logging
-import threading
-from queue import Queue
-from time import sleep
-from typing import List, Tuple
-
-import pifacecad
-from blinker import signal
-
-from simple_pager.lcd_worker import LCDWorker
 
 logger = logging.getLogger(__name__)
 

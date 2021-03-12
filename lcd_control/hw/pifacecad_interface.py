@@ -5,7 +5,7 @@ from typing import List, Tuple, Callable, Optional
 import pifacecad
 from pifacecad import PiFaceCAD, SwitchEventListener
 
-from simple_pager.hw.lcd_interface import LcdInterface
+from lcd_control.hw.lcd_interface import LcdInterface
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +25,9 @@ class PiFaceCadInterface(LcdInterface):
 
     def close(self):
         if self._key_listener:
+            log.info("Stopping key listener")
             self._key_listener.deactivate()
+
 
     def setup_key_listener(self, key_handler: Callable[[int], None]):
         super().setup_key_listener(key_handler=key_handler)

@@ -1,12 +1,16 @@
+import os, sys
+currentdir = os.path.dirname(os.path.realpath(__file__))
+parentdir = os.path.dirname(currentdir)
+sys.path.append(parentdir)
+
 import datetime
 import logging
-import os
 import subprocess
 from time import sleep
 
-from simple_pager.hw.pifacecad_interface import PiFaceCadInterface
+from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
 from simple_pager.page import PageController
-from simple_pager.piface_controller import PiFaceController
+from lcd_control.piface_controller import PiFaceController
 from simple_pager.timer_functions import RepeatedTimer
 
 log = logging.getLogger(__name__)
