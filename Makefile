@@ -1,10 +1,10 @@
-TARGET_IP=192.168.1.68
+TARGET_IP?=192.168.2.143
 TARGET_USER=pi
 TARGET_EXAMPLE_DIR=/home/${TARGET_USER}/lcd-screen-piface/
 
 .PHONY: env
 env:
-	virtualenv venv --no-site-packages -p /usr/bin/python3 && . venv/bin/activate && python -m pip install -r requirements.txt
+	virtualenv .venv -p /usr/bin/python3 && . .venv/bin/activate && python -m pip install -r requirements.txt
 
 .PHONY: deploy
 deploy_examples:

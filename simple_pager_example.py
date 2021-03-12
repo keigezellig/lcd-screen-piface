@@ -1,13 +1,15 @@
 import datetime
+import logging
 import os
 import subprocess
 from time import sleep
 
 from simple_pager import PiFaceController, PageController
+from simple_pager.queued_piface_controller import QueuedPiFaceController
+from simple_pager.timer_functions import RepeatedTimer
 
 GET_IP_CMD = "hostname --all-ip-addresses"
 curr_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-
 
 
 def run_cmd(cmd):
@@ -45,17 +47,25 @@ def previous_page(sender):
 def home_page(sender):
     pageController.set_active_page(0)
 
+def update_time():
+    print("TICK")
+    curr_time = datetime.datetime.now().strftime("%S")
+    pageController.update_text(page_id=1, new_lines=["Current time", curr_time])
+
 
 def reboot(sender):
     piFaceController.display_text(textlines=["Rebooting in 5 secs"], location=None, should_clear=True)
     sleep(5)
     piFaceController.clear()
     piFaceController.backlight_off()
-    os.system("sudo reboot")
+   # os.system("sudo reboot")
 
 
 if __name__ == '__main__':
-    piFaceController = PiFaceController()
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+    # piFaceController = PiFaceController()
+    piFaceController = QueuedPiFaceController()
     pageController = PageController(lcd_controller=piFaceController)
     pageController.add_page(["IP: {ip}".format(ip=get_my_ip()), "S/W: 3.0.323234a"])
     pageController.add_page(["Current time", curr_time])
@@ -70,9 +80,21 @@ if __name__ == '__main__':
     piFaceController.set_button_eventhandler(button=piFaceController.ROCKER_RIGHT, handler=next_page)
     piFaceController.set_button_eventhandler(button=piFaceController.ROCKER_PRESS, handler=home_page)
 
-    piFaceController.display_scrolling_text(textlines=["Welcome to Acme LCD"], direction="right",
-                                            number_of_positions=22,
-                                            delay=.1)
+    timer = RepeatedTimer(1.0, update_time)
 
-    piFaceController.init()
-    pageController.set_active_page(0)
+    try:
+        piFaceController.init()
+        piFaceController.display_scrolling_text(textlines=["Welcome to Acme LCD"], direction="right",
+                                                number_of_positions=22,
+                                                delay=.1)
+
+        pageController.set_active_page(0)
+
+        timer.start()
+
+        while True:
+            sleep(0.1)
+
+    except KeyboardInterrupt:
+        timer.stop()
+        piFaceController.close()

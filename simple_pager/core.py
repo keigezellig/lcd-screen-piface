@@ -1,10 +1,16 @@
 import logging
+import threading
+from queue import Queue
 from time import sleep
+from typing import List, Tuple
 
 import pifacecad
 from blinker import signal
 
+from simple_pager.lcd_worker import LCDWorker
+
 logger = logging.getLogger(__name__)
+
 
 class Page:
     def __init__(self):
@@ -53,6 +59,7 @@ class PageController:
             self.__display_page(page_id=self.__active_page_id, should_clear=False)
 
 
+
 class PiFaceController:
     BUTTON_0 = 0
     BUTTON_1 = 1
@@ -81,7 +88,7 @@ class PiFaceController:
     def init(self):
         listener = pifacecad.SwitchEventListener(chip=self.__piface)
         for i in range(8):
-            listener.register(i, pifacecad.IODIR_FALLING_EDGE, self.__handle_button)
+            listener.register(i, pifacecad.IODIR_ON, self.__handle_button)
 
         listener.activate()
 

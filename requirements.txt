@@ -1,5 +1,7 @@
+cython
 blinker
 git+https://github.com/piface/pifacecad/#egg=pifacecad
 git+https://github.com/piface/pifacecommon/#egg=pifacecommon
-python-lirc==1.2.1
+#git+https://github.com/tompreston/python-lirc.git/#egg=python-lirc
+
 
