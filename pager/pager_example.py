@@ -1,77 +1,73 @@
-import threading
+import os, sys
 
-import pifacecad
+currentdir = os.path.dirname(os.path.realpath(__file__))
+parentdir = os.path.dirname(currentdir)
+sys.path.append(parentdir)
+
+from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
+from lcd_control.piface_controller import PiFaceController
+from pager.screen import Screen
+
+import logging
 from time import sleep
 
-from pager import PagedScreen
 
-global end_barrier
-end_barrier = threading.Barrier(2)
-cad = pifacecad.PiFaceCAD()
-lcd = cad.lcd
-
-
-def actionA(pager):
-    lcd.clear()
-    lcd.write("Action A")
+def actionA(pager, lcd):
+    lcd.display_text(textlines=["Action A"], location=None, should_clear=True)
     sleep(5)
     pager.display()
 
 
-def actionB(pager):
-    lcd.clear()
-    lcd.write("Action B")
+def actionB(pager, lcd):
+    lcd.display_text(textlines=["Action B"], location=None, should_clear=True)
     sleep(5)
     pager.display()
 
 
-def actionC(pager):
-    lcd.clear()
-    lcd.write("Action C")
+def actionC(pager, lcd):
+    lcd.display_text(textlines=["Action C"], location=None, should_clear=True)
     sleep(5)
     pager.display()
 
 
-def actionD(pager):
-    lcd.clear()
-    lcd.write("Action D")
+def actionD(pager, lcd):
+    lcd.display_text(textlines=["Action D"], location=None, should_clear=True)
     sleep(5)
     pager.display()
 
 
-def actionE(pager):
-    lcd.clear()
-    lcd.write("Action E")
+def actionE(pager, lcd):
+    lcd.display_text(textlines=["Action E"], location=None, should_clear=True)
     sleep(5)
     pager.display()
 
-def play(pager):
-    lcd.clear()
-    lcd.write("Play")
+
+def play(pager, lcd):
+    lcd.display_text(textlines=["Play"], location=None, should_clear=True)
     sleep(5)
     pager.display()
 
-def pause(pager):
-    lcd.clear()
-    lcd.write("Pause")
+
+def pause(pager, lcd):
+    lcd.display_text(textlines=["Pause"], location=None, should_clear=True)
     sleep(5)
     pager.display()
 
-def stop(pager):
-    lcd.clear()
-    lcd.write("Stop")
+
+def stop(pager, lcd):
+    lcd.display_text(textlines=["Stop"], location=None, should_clear=True)
     sleep(5)
     pager.display()
 
-def record(pager):
-    lcd.clear()
-    lcd.write("Record")
+
+def record(pager, lcd):
+    lcd.display_text(textlines=["Record"], location=None, should_clear=True)
     sleep(5)
     pager.display()
 
-def standby(pager):
-    lcd.clear()
-    lcd.write("Standby")
+
+def standby(pager, lcd):
+    lcd.display_text(textlines=["Standby"], location=None, should_clear=True)
     sleep(5)
     pager.display()
 
@@ -106,17 +102,20 @@ def createPagesForScreen():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    screen1 = PagedScreen(cad=cad, pages=createPagesForScreen())
+    lcd_controller: PiFaceController = PiFaceController(PiFaceCadInterface())
+    screen: Screen = Screen(page_definitions=createPagesForScreen(), lcd_controller=lcd_controller)
 
     try:
-        lcd.backlight_on()
-        screen1.display(page=0)
-        end_barrier.wait()
+        lcd_controller.start()
+        lcd_controller.display_scrolling_text(textlines=["Welcome to Acme LCD"], direction="right",
+                                   number_of_positions=22,
+                                   delay=.1)
+        screen.display(1)
+
+        while True:
+            sleep(0.1)
+
     except KeyboardInterrupt:
-        screen1.clean_up()
-        cad.lcd.write("Goodbye")
-        sleep(2)
-        cad.lcd.clear()
-        cad.lcd.backlight_off()
-        cad.lcd.cursor_off()
+        lcd_controller.close()

@@ -1,6 +1,6 @@
 import logging
 import threading
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from blinker import signal
 
@@ -42,21 +42,21 @@ class PiFaceController:
 
     def _handle_button(self, button: int):
         if button == self.BUTTON_0:
-            self.__button0_pressed.send(self)
+            self.__button0_pressed.send(self, button=button)
         elif button == self.BUTTON_1:
-            self.__button1_pressed.send(self)
+            self.__button1_pressed.send(self, button=button)
         elif button == self.BUTTON_2:
-            self.__button2_pressed.send(self)
+            self.__button2_pressed.send(self, button=button)
         elif button == self.BUTTON_3:
-            self.__button3_pressed.send(self)
+            self.__button3_pressed.send(self, button=button)
         elif button == self.BUTTON_4:
-            self.__button4_pressed.send(self)
+            self.__button4_pressed.send(self, button=button)
         elif button == self.ROCKER_PRESS:
-            self.__rocker_pressed.send(self)
+            self.__rocker_pressed.send(self, button=button)
         elif button == self.ROCKER_LEFT:
-            self.__rocker_left_pressed.send(self)
+            self.__rocker_left_pressed.send(self, button=button)
         elif button == self.ROCKER_RIGHT:
-            self.__rocker_right_pressed.send(self)
+            self.__rocker_right_pressed.send(self, button=button)
 
     def set_button_eventhandler(self, button, handler):
         signal_name = ''
@@ -74,8 +74,17 @@ class PiFaceController:
 
         signal(name=signal_name).connect(handler)
 
-    def display_text(self, textlines: List[str], location: Tuple[int, int], should_clear: bool):
+    def display_text(self, textlines: List[str], location: Optional[Tuple[int, int]], should_clear: bool):
         item = ('display_text', {'text_lines': textlines, 'location': location, 'should_clear': should_clear})
+        self._worker.schedule_command(item)
+
+    def load_bitmap(self, bitmap_data: List[int], index: int):
+        log.debug(bitmap_data)
+        item = ('load_bitmap', {'bitmap_data': bitmap_data, 'index':index})
+        self._worker.schedule_command(item)
+
+    def display_bitmap(self, index: int, location: Tuple[int, int] = None):
+        item = ('display_bitmap', {'index': index, 'location': location})
         self._worker.schedule_command(item)
 
     def scroll_right(self, number_of_positions=1):

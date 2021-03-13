@@ -3,7 +3,7 @@ from time import sleep
 from typing import List, Tuple, Callable, Optional
 
 import pifacecad
-from pifacecad import PiFaceCAD, SwitchEventListener
+from pifacecad import PiFaceCAD, SwitchEventListener, LCDBitmap
 
 from lcd_control.hw.lcd_interface import LcdInterface
 
@@ -63,6 +63,32 @@ class PiFaceCadInterface(LcdInterface):
             for i, item in enumerate(text_lines):
                 self._pi_face.lcd.set_cursor(0, i)
                 self._pi_face.lcd.write(item)
+
+    def load_bitmap(self, bitmap_data: List[int], index: int):
+        if len(bitmap_data) != 8:
+            raise ValueError('Bitmaps should be 5x8')
+        if index < 0 or index > 7:
+            raise ValueError("Index should be between 0 and 7 ")
+
+        bitmap: LCDBitmap = LCDBitmap(bitmap_data)
+        self._pi_face.lcd.store_custom_bitmap(char_bank=index, bitmap=bitmap)
+
+    def display_bitmap(self, index: int, location: Tuple[int, int] = None):
+        if index < 0 or index > 7:
+            raise ValueError("Bitmap index should be between 0 and 7 ")
+
+        if location is not None:
+            row, col = location
+            self._pi_face.lcd.set_cursor(col, row)
+
+        self._pi_face.lcd.write_custom_bitmap(index)
+
+
+
+
+
+
+
 
     def display_scrolling_text(self, text_lines: List[str], direction: str, number_of_positions: int, delay: int):
         log.debug(f"_display_scrolling_text({text_lines}, {direction}, {number_of_positions},{delay}")

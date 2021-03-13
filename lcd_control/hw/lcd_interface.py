@@ -20,8 +20,18 @@ class LcdInterface(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
+    def load_bitmap(self, bitmap: List[int], index: int):
+        pass
+
+    @abc.abstractmethod
+    def display_bitmap(self, index: int, location: Tuple[int,int] = None):
+        pass
+
+    @abc.abstractmethod
     def display_scrolling_text(self, text_lines: List[str], direction: str, number_of_positions: int, delay: int):
         pass
+
+
 
     @abc.abstractmethod
     def scroll_left(self, number_of_positions: int):
@@ -62,3 +72,4 @@ class LcdInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def blink_off(self):
         pass
+

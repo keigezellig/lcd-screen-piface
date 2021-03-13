@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 class LCDWorker:
-    def __init__(self, lcd: LcdInterface, qsize: int = 1, delay_between_processing_messages=0.25):
+    def __init__(self, lcd: LcdInterface, qsize: int = 1, delay_between_processing_messages=0):
         self._queue: Queue = Queue(maxsize=qsize)
         self._lcd = lcd
         self._delay_between_processing_messages = delay_between_processing_messages
@@ -63,12 +63,17 @@ class LCDWorker:
                     lcd_method(self._lcd)
                 elif command == 'blink_off':
                     lcd_method(self._lcd)
+                elif command == 'load_bitmap':
+                    lcd_method(self._lcd, parameters['bitmap_data'], parameters['index'])
+                elif command == 'display_bitmap':
+                    lcd_method(self._lcd, parameters['index'], parameters['location'])
                 else:
                     log.warning(f"Command {command} not implemented")
             except Exception as e:
                 log.error(f"Error: {e}", exc_info=True)
             finally:
-                sleep(self._delay_between_processing_messages)
+                if self._delay_between_processing_messages > 0:
+                    sleep(self._delay_between_processing_messages)
                 self._queue.task_done()
 
             log.debug(f"Q-size: {self._queue.qsize()}")
