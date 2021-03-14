@@ -58,6 +58,22 @@ class PiFaceController:
         elif button == self.ROCKER_RIGHT:
             self.__rocker_right_pressed.send(self, button=button)
 
+    def unset_button_eventhandler(self, button, handler):
+        signal_name = ''
+        if self.BUTTON_0 <= button <= self.BUTTON_4:
+            signal_name = 'button{button}_pressed'.format(button=button)
+        elif button == self.ROCKER_PRESS:
+            signal_name = 'rocker_pressed'
+        elif button == self.ROCKER_LEFT:
+            signal_name = 'rocker_left_pressed'
+        elif button == self.ROCKER_RIGHT:
+            signal_name = 'rocker_right_pressed'
+
+        if signal_name == '':
+            log.warning("Invalid button argument, will do nothing")
+
+        signal(name=signal_name).disconnect(handler)
+
     def set_button_eventhandler(self, button, handler):
         signal_name = ''
         if self.BUTTON_0 <= button <= self.BUTTON_4:

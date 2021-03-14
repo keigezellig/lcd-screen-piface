@@ -1,4 +1,6 @@
+import logging
 from threading import Timer
+log = logging.getLogger(__name__)
 
 class RepeatedTimer(object):
     def __init__(self, interval, function, *args, **kwargs):
@@ -8,7 +10,6 @@ class RepeatedTimer(object):
         self.args       = args
         self.kwargs     = kwargs
         self.is_running = False
-        self.start()
 
     def _run(self):
         self.is_running = False
@@ -22,5 +23,6 @@ class RepeatedTimer(object):
             self.is_running = True
 
     def stop(self):
+        log.debug("Stopping timer")
         self._timer.cancel()
         self.is_running = False

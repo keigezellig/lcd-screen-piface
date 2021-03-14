@@ -6,10 +6,11 @@ sys.path.append(parentdir)
 
 from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
 from lcd_control.piface_controller import PiFaceController
-from pager.screen import Screen
-
+from pager.page_controller import PageController
 import logging
 from time import sleep
+import datetime
+from pager.timer_functions import RepeatedTimer
 
 
 def actionA(pager, lcd):
@@ -72,50 +73,64 @@ def standby(pager, lcd):
     pager.display()
 
 
-def createPagesForScreen():
+def update_time(pager: PageController, lcd):
+    curr_date = datetime.datetime.now().strftime("%d-%b-%Y")
+    curr_time = datetime.datetime.now().strftime("%H:%M:%S")
+    pager.update_page(page_index=0, new_content={"line1": curr_date, "line2": curr_time})
+
+
+def create_pages():
     bitmaps = {"play": [0x0, 0x8, 0xc, 0xe, 0xc, 0x8, 0x0, 0x0],
                "pause": [0x0, 0xa, 0xa, 0xa, 0xa, 0xa, 0x0, 0x0],
                "stop": [0x0, 0xe, 0xe, 0xe, 0xe, 0xe, 0x0, 0x0],
                "record": [0x0, 0xe, 0x1f, 0x1f, 0x1f, 0xe, 0x0, 0x0],
                "standby": [0x4, 0xe, 0x15, 0x15, 0x11, 0xe, 0x0, 0x0]}
 
-    pages = [{"text": "P0 (labels)",
+    pages = [{"line1": "",
+              "line2": ""},
+             {"caption": "P1 (labels)",
               "actions": [{"label": "A", "action": "pager_example.actionA"},
                           {"label": "B", "action": "pager_example.actionB"},
                           {"label": "C", "action": "pager_example.actionC"},
                           {"label": "D", "action": "pager_example.actionD"},
                           {"label": "E", "action": "pager_example.actionE"}]},
-             {"text": "P1 (bitmaps)",
+             {"caption": "P2 (bitmaps)",
               "actions": [{"bitmap": bitmaps["play"], "action": "pager_example.play"},
                           {"bitmap": bitmaps["pause"], "action": "pager_example.pause"},
                           {"bitmap": bitmaps["stop"], "action": "pager_example.stop"},
                           {"bitmap": bitmaps["record"], "action": "pager_example.record"},
                           {"bitmap": bitmaps["standby"], "action": "pager_example.standby"}]},
-             {"text": "P2 with no actions",
-              "actions": []},
-             {"text": "P3 (less actions)",
+             {"caption": "P3 (less actions)",
               "actions": [{"label": "A", "action": "pager_example.actionA"},
                           {"label": "B", "action": "pager_example.actionB"},
-                          {"label": "C", "action": "pager_example.actionC"}]}
+                          {"label": "C", "action": "pager_example.actionC"}]},
              ]
     return pages
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s - %(levelname)s - %(name)s - %(module)s.%(funcName)s - %(message)s')
 
     lcd_controller: PiFaceController = PiFaceController(PiFaceCadInterface())
-    screen: Screen = Screen(page_definitions=createPagesForScreen(), lcd_controller=lcd_controller)
+    page_controller: PageController = PageController(lcd_controller=lcd_controller)
+    timer = RepeatedTimer(1.0, update_time, page_controller, lcd_controller)
 
     try:
         lcd_controller.start()
+        page_definitions = create_pages()
+        for page_def in page_definitions:
+            page_controller.add_page(page_def)
+
         lcd_controller.display_scrolling_text(textlines=["Welcome to Acme LCD"], direction="right",
-                                   number_of_positions=22,
-                                   delay=.1)
-        screen.display(1)
+                                              number_of_positions=22,
+                                              delay=.1)
+        page_controller.display()
+        timer.start()
 
         while True:
             sleep(0.1)
 
     except KeyboardInterrupt:
+        timer.stop()
         lcd_controller.close()
