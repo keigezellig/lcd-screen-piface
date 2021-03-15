@@ -28,8 +28,12 @@ class PageController:
         page.set_content(content=content)
         self._pages.append(page)
 
-    def update_page(self, page_index: int, new_content: dict):
-        page = self._pages[page_index]
+    def update_page(self, page_index: Optional[int] = None, new_content: dict):
+        index = page_index
+        if page_index = None:
+            index = self._current_page_index
+        
+        page = self._pages[index]
         page.set_content(new_content)
         if self._current_page_index == page_index:
             self._refresh_current_page()
