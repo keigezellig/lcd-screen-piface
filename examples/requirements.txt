@@ -1,9 +1,3 @@
-#cython
-#blinker
-#git+https://github.com/piface/pifacecad/#egg=pifacecad
-#git+https://github.com/piface/pifacecommon/#egg=pifacecommon
-#git+https://github.com/tompreston/python-lirc.git/#egg=python-lirc
-
 git+git://github.com/keigezellig/lcd-screen-piface@feature/deployment-and-packaging#egg=lcd-screen-piface
 
 

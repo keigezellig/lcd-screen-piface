@@ -12,7 +12,12 @@ import os, sys
 import logging
 from time import sleep
 import datetime
-from pager.timer_functions import RepeatedTimer
+
+from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
+from lcd_control.piface_controller import PiFaceController
+from pager.page_controller import PageController
+
+from timer_functions import RepeatedTimer
 
 
 def actionA(pager, lcd):
