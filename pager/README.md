@@ -47,25 +47,24 @@ The definition of a page consists of a `dictionary` of items:
 The `PageController` class takes care of everything. 
 
 #### Initialize an instance:
-
-`page_controller = PageController(lcd_controller=initialized_piface_controller)`
+`page_controller = PageController(lcd_controller)`
 
 -`lcd_controller` is an **already** initialized (but doesn't have to be `started` yet) [`PifaceController`](../lcd_control/piface_controller.py)  object
 
 #### Add a page
-`page_controller.add(content=page_definition)`
+`page_controller.add(content)`
 - `content` is a dictionary containing the page definition as described above.
 - This can only be called after the 'PifaceController' is started, otherwise you get undefined behaviour.
 
-
 #### Display a page
+`page_controller.display(page_index)`
+- Displays page 'index' (0 based) or if argument is left out, the current page will be displayed
 
-`screen1.display(page=pageno)`
-
-Displays page pageno (0 based)
+#### Update a page
+`page_controller.update_page(page_index, new_content)`
+- Updates page 'page_index' (0 based) or if argument is left out, the current page with new content as specified in 'new_content'
 
 #### Clean up
-
 `screen1.clean_up()`
 
 Cleans up resources (needs **always** to be called after finishing the application)
