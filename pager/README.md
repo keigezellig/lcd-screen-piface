@@ -64,10 +64,5 @@ The `PageController` class takes care of everything.
 `page_controller.update_page(page_index, new_content)`
 - Updates page 'page_index' (0 based) or if argument is left out, the current page with new content as specified in 'new_content'
 
-#### Clean up
-`screen1.clean_up()`
-
-Cleans up resources (needs **always** to be called after finishing the application)
-
 ## Live example
 [![Example](https://img.youtube.com/vi/cJd8QzbMm24/0.jpg)](http://www.youtube.com/watch?v=cJd8QzbMm24)
