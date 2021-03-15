@@ -1,3 +1,6 @@
+#../
 git+git://github.com/keigezellig/lcd-screen-piface@feature/deployment-and-packaging#egg=lcd-screen-piface
+git+https://github.com/piface/pifacecad/#egg=pifacecad
+
 
 
