@@ -1,16 +1,23 @@
 import os, sys
 
-currentdir = os.path.dirname(os.path.realpath(__file__))
-parentdir = os.path.dirname(currentdir)
-sys.path.append(parentdir)
+# currentdir = os.path.dirname(os.path.realpath(__file__))
+# parentdir = os.path.dirname(currentdir)
+# sys.path.append(parentdir)
+
+# from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
+# from lcd_control.piface_controller import PiFaceController
+# from pager.page_controller import PageController
+
+
+import logging
+from time import sleep
+import datetime
 
 from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
 from lcd_control.piface_controller import PiFaceController
 from pager.page_controller import PageController
-import logging
-from time import sleep
-import datetime
-from pager.timer_functions import RepeatedTimer
+
+from timer_functions import RepeatedTimer
 
 
 def actionA(pager, lcd):

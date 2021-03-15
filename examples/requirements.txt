@@ -1,0 +1,4 @@
+git+https://github.com/piface/pifacecad/#egg=pifacecad
+git+git://github.com/keigezellig/lcd-screen-piface@develop#egg=lcd-screen-piface
+
+
