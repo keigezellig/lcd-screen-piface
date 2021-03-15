@@ -28,9 +28,9 @@ class PageController:
         page.set_content(content=content)
         self._pages.append(page)
 
-    def update_page(self, page_index: Optional[int] = None, new_content: dict):
+    def update_page(self, new_content: dict, page_index: Optional[int] = None):
         index = page_index
-        if page_index = None:
+        if page_index == None:
             index = self._current_page_index
         
         page = self._pages[index]
