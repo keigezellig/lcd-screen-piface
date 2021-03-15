@@ -1,12 +1,14 @@
 import os, sys
 
-currentdir = os.path.dirname(os.path.realpath(__file__))
-parentdir = os.path.dirname(currentdir)
-sys.path.append(parentdir)
+# currentdir = os.path.dirname(os.path.realpath(__file__))
+# parentdir = os.path.dirname(currentdir)
+# sys.path.append(parentdir)
 
-from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
-from lcd_control.piface_controller import PiFaceController
-from pager.page_controller import PageController
+# from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
+# from lcd_control.piface_controller import PiFaceController
+# from pager.page_controller import PageController
+
+
 import logging
 from time import sleep
 import datetime
