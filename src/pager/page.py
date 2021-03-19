@@ -95,8 +95,14 @@ class InputPage(Page):
         self._content: Dict = {}
 
     def display(self, is_update=False):
-        pass
+        self._lcd_controller.get_input(input_string=self._content['input_string'], on_result_received=self._content['on_input_received_action'])
 
+    """
+    'content': {'input_string': "Blabla %f", 'on_input_received_action': <function>'} 
+    """
     def set_content(self, content: Dict):
-        pass
+        if ('input_string' not in content) or ('on_input_received_action' not in content):
+            raise ValueError('Content of a input page should contain a dictionary with "input_string" and "on_input_received_action" keys')
+        self._content = content
+
 

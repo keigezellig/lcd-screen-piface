@@ -149,6 +149,10 @@ class PiFaceController:
         item = ('clear', {})
         self._worker.schedule_command(item)
 
+    def get_input(self, input_string: str, on_result_received):
+        item = ('get_input', {'input_string': input_string, 'on_result_received': on_result_received})
+        self._worker.schedule_command(item)
+
     def close(self):
         log.info("Stopping PifaceController")
         self._worker.stop()

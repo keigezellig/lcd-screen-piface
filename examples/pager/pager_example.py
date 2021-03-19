@@ -80,6 +80,10 @@ def standby(pager, lcd):
     pager.display()
 
 
+def display_input(sender, result):
+    print(f"Input = {result}")
+
+
 def update_time(pager: PageController, lcd):
     curr_date = datetime.datetime.now().strftime("%d-%b-%Y")
     curr_time = datetime.datetime.now().strftime("%H:%M:%S")
@@ -111,6 +115,8 @@ def create_pages():
               "actions": [{"label": "A", "action": "pager_example.actionA"},
                           {"label": "B", "action": "pager_example.actionB"},
                           {"label": "C", "action": "pager_example.actionC"}]},
+             {"input_string": "Enter a number: %i",
+              "on_input_received_action": "pager_example.display_input"},
              ]
     return pages
 
