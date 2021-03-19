@@ -1,6 +1,7 @@
 import logging
 from time import sleep
 from typing import List, Tuple, Callable, Optional
+from pifacecad.tools.scanf import LCDScanf
 
 import pifacecad
 from pifacecad import PiFaceCAD, SwitchEventListener, LCDBitmap
@@ -145,3 +146,7 @@ class PiFaceCadInterface(LcdInterface):
 
     def blink_off(self):
         self._pi_face.lcd.blink_off()
+
+     def get_input(self, input_string: str):
+        scanner:LCDScanf = LCDScanf(input_string)        
+        return scanner.scan()

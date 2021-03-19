@@ -86,3 +86,17 @@ class ActionPage(Page):
 
         for idx, bitmap in enumerate(bitmaps):
             self._lcd_controller.load_bitmap(bitmap, idx)
+
+
+class InputPage(Page):
+
+    def __init__(self, lcd_controller: PiFaceController):
+        super().__init__(lcd_controller)
+        self._content: Dict = {}
+
+    def display(self, is_update=False):
+        pass
+
+    def set_content(self, content: Dict):
+        pass
+

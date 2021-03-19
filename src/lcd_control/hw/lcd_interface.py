@@ -73,3 +73,7 @@ class LcdInterface(metaclass=abc.ABCMeta):
     def blink_off(self):
         pass
 
+    @abc.abstractmethod
+    def get_input(self, input_string):
+        pass
+
