@@ -1,6 +1,6 @@
 import abc
 import logging
-from typing import List, Dict
+from typing import List, Dict, Callable
 
 from blinker import signal
 
@@ -114,21 +114,58 @@ class InputPage(Page):
 
     def __init__(self, lcd_controller: PiFaceController):
         super().__init__(lcd_controller)
-        self._content: Dict = {}
+        self._input_length: int = 0
+        self._input_ranges: Dict[str, str] = {'number':'01234567890', 'alpha':'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890-=!@#$%*()_+[]{};\'\\:"|,./<>?'}
+        self._caption: str = ''
+        self._input_type: str = 'number'
+        self._input_value: str = ''
+        self._input_confirmed_action: Callable[[str, PiFaceController], None] = None
+        self._input_cancelled_action: Callable[[PiFaceController], None] = None
 
     def display(self, is_update=False):
         # self._lcd_controller.get_input(input_string=self._content['input_string'], on_result_received=self._content['on_input_received_action'])
         pass
 
     def handle_button(self, sender, button: int):
-        pass
+
+        if button == PiFaceController.BUTTON_2:
+            cur_row, cur_col = self._lcd_controller.get_cursor_position()
+
+
+        elif button == PiFaceController.BUTTON_3:
+            # Confirm input
+            self._input_confirmed_action(self._input_value, self._lcd_controller)
+        elif button == PiFaceController.BUTTON_4:
+            # Cancel input
+            self._input_cancelled_action(self._lcd_controller)
+        elif button == PiFaceController.ROCKER_LEFT:
+            # Move cursor to the left
+            self._lcd_controller.move_cursor_left(num_of_positions=1, min_position=0)
+        elif button == PiFaceController.ROCKER_RIGHT:
+            # Move cursor to the right
+            self._lcd_controller.move_cursor_right(num_of_positions=1, max_position=self._input_length-1)
+
+
+
+
 
     """
-    'content': {'input_string': "Blabla %f", 'on_input_received_action': <function>'} 
+    'content': {'caption': "Blabla", 'length': (max 16), 'type': number|alpha  'on_input_cancelled_action': <function>', 'on_input_confirmed_action': <function>'} 
     """
 
     def set_content(self, content: Dict):
-        if ('input_string' not in content) or ('on_input_received_action' not in content):
+        if ('caption' not in content) or ('length' not in content) or ('type' not in content) or ('on_input_cancelled_action' not in content) or ('on_input_confirmed_action' not in content):
             raise ValueError(
-                'Content of a input page should contain a dictionary with "input_string" and "on_input_received_action" keys')
-        self._content = content
+                'Invalid content, missing fields')
+        if content['length'] > 16:
+            raise ValueError('Maximum length of input field is 16')
+
+        if content['type'] != 'number' or content['type'] != 'alpha':
+            raise ValueError('Only alphanumeric or numeric types allowed')
+
+        self._input_length = content['length']
+        self._input_type = content['type']
+        self._caption = content['caption']
+        self._input_value = '' if 'input_value' not in content else content['input_value']
+        self._input_confirmed_action = content['on_input_confirmed_action']
+        self._input_cancelled_action = content['on_input_cancelled_action']

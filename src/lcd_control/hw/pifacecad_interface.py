@@ -29,7 +29,6 @@ class PiFaceCadInterface(LcdInterface):
             log.info("Stopping key listener")
             self._key_listener.deactivate()
 
-
     def setup_key_listener(self, key_handler: Callable[[int], None]):
         super().setup_key_listener(key_handler=key_handler)
 
@@ -83,13 +82,6 @@ class PiFaceCadInterface(LcdInterface):
             self._pi_face.lcd.set_cursor(col, row)
 
         self._pi_face.lcd.write_custom_bitmap(index)
-
-
-
-
-
-
-
 
     def display_scrolling_text(self, text_lines: List[str], direction: str, number_of_positions: int, delay: int):
         log.debug(f"_display_scrolling_text({text_lines}, {direction}, {number_of_positions},{delay}")
@@ -147,6 +139,8 @@ class PiFaceCadInterface(LcdInterface):
     def blink_off(self):
         self._pi_face.lcd.blink_off()
 
+
+
     def get_input(self, input_string: str):
-        scanner:LCDScanf = LCDScanf(input_string)        
+        scanner: LCDScanf = LCDScanf(input_string)
         return scanner.scan()
