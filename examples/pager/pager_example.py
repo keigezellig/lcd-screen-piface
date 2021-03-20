@@ -13,6 +13,7 @@ import logging
 from time import sleep
 import datetime
 
+log = logging.getLogger(__name__)
 from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
 from lcd_control.piface_controller import PiFaceController
 from pager.page_controller import PageController
@@ -81,7 +82,7 @@ def standby(pager, lcd):
 
 
 def display_input(sender, result):
-    print(f"Input = {result}")
+    log.info(f"Input = {result}")
 
 
 def update_time(pager: PageController, lcd):

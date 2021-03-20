@@ -2,6 +2,8 @@ import abc
 import logging
 from typing import List, Dict
 
+from blinker import signal
+
 from lcd_control.piface_controller import PiFaceController
 
 log = logging.getLogger(__name__)
@@ -19,8 +21,24 @@ class Page(metaclass=abc.ABCMeta):
     def set_content(self, content: Dict):
         pass
 
+    def handle_button(self, sender, button: int):
+        pass
 
-class SimplePage(Page):
+
+class NonModalPage(Page, metaclass=abc.ABCMeta):
+    def __init__(self, lcd_controller: PiFaceController):
+        super().__init__(lcd_controller=lcd_controller)
+
+    def handle_button(self, sender, button: int):
+        if button == PiFaceController.ROCKER_LEFT:
+            signal(name='previous_page').send()
+        elif button == PiFaceController.ROCKER_RIGHT:
+            signal(name='next_page').send()
+        elif button == PiFaceController.ROCKER_PRESS:
+            signal(name='home_page').send()
+
+
+class SimplePage(NonModalPage):
     def __init__(self, lcd_controller: PiFaceController):
         super().__init__(lcd_controller)
         self._content: Dict = {}
@@ -36,7 +54,7 @@ class SimplePage(Page):
         self._content = content
 
 
-class ActionPage(Page):
+class ActionPage(NonModalPage):
     _MAX_ACTIONS = 5
 
     def __init__(self, lcd_controller: PiFaceController):
@@ -56,7 +74,11 @@ class ActionPage(Page):
             if 'bitmap' in action:
                 self._lcd_controller.display_bitmap(index=idx, location=(1, idx * 2))
 
-    def execute_action(self, button: int):
+    def handle_button(self, sender, button: int):
+        super().handle_button(sender=sender, button=button)
+        self._execute_action(button=button)
+
+    def _execute_action(self, button: int):
         actions = self._content['actions']
         if len(actions) > 0 and button < len(actions):
             action = actions[button]
@@ -95,14 +117,18 @@ class InputPage(Page):
         self._content: Dict = {}
 
     def display(self, is_update=False):
-        self._lcd_controller.get_input(input_string=self._content['input_string'], on_result_received=self._content['on_input_received_action'])
+        # self._lcd_controller.get_input(input_string=self._content['input_string'], on_result_received=self._content['on_input_received_action'])
+        pass
+
+    def handle_button(self, sender, button: int):
+        pass
 
     """
     'content': {'input_string': "Blabla %f", 'on_input_received_action': <function>'} 
     """
+
     def set_content(self, content: Dict):
         if ('input_string' not in content) or ('on_input_received_action' not in content):
-            raise ValueError('Content of a input page should contain a dictionary with "input_string" and "on_input_received_action" keys')
+            raise ValueError(
+                'Content of a input page should contain a dictionary with "input_string" and "on_input_received_action" keys')
         self._content = content
-
-
