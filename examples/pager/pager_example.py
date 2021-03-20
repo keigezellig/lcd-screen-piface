@@ -42,7 +42,7 @@ def actionC():
     page_controller.display()
 
 
-def actionD(pager, lcd):
+def actionD():
     lcd_controller.display_text(textlines=["Action D"], location=None, should_clear=True)
     sleep(5)
     page_controller.display()
