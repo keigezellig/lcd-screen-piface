@@ -27,8 +27,6 @@ class PageController:
             page = SimplePage(self._lcd_controller)
         elif 'caption' in content and 'actions' in content:
             page = ActionPage(self._lcd_controller)
-        elif 'input_string' in content and 'on_input_received_action' in content:
-            page = InputPage(self._lcd_controller)
         else:
             raise ValueError("Unknown page type")
 
