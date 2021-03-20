@@ -3,16 +3,19 @@ from queue import Queue
 from time import sleep
 from typing import Any, Dict, Tuple
 
+from blinker import signal
 from lcd_control.hw.lcd_interface import LcdInterface
 
 log = logging.getLogger(__name__)
 
 
 class LCDWorker:
-    def __init__(self, lcd: LcdInterface, qsize: int = 1, delay_between_processing_messages=0):
+    def __init__(self, lcd: LcdInterface, qsize: int = 1, delay_between_processing_messages=0, ):
         self._queue: Queue = Queue(maxsize=qsize)
         self._lcd = lcd
         self._delay_between_processing_messages = delay_between_processing_messages
+        self._return_value_available = signal('return_value_available')
+
 
     def setup(self):
         self._lcd.setup()
@@ -67,6 +70,12 @@ class LCDWorker:
                     lcd_method(self._lcd, parameters['bitmap_data'], parameters['index'])
                 elif command == 'display_bitmap':
                     lcd_method(self._lcd, parameters['index'], parameters['location'])
+                elif command == 'get_input':
+                    result = lcd_method(self._lcd, parameters['input_string'])
+                    on_result_received_handler = parameters['on_result_received']
+                    self._return_value_available.connect(receiver=on_result_received_handler)
+                    self._return_value_available.send(sender=command, result=result)
+                    self._return_value_available.disconnect(receiver=on_result_received_handler)
                 else:
                     log.warning(f"Command {command} not implemented")
             except Exception as e:

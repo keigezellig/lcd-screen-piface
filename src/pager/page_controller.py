@@ -1,8 +1,10 @@
 import logging
 from typing import List, Dict, Optional
 
+from blinker import signal
+
 from lcd_control.piface_controller import PiFaceController
-from pager.page import Page, SimplePage, ActionPage
+from pager.page import Page, SimplePage, ActionPage, InputPage
 
 log = logging.getLogger(__name__)
 
@@ -13,7 +15,10 @@ class PageController:
         self._lcd_controller: PiFaceController = lcd_controller
         self._current_page_index: int = 0
 
-        self._setup_buttons()
+        signal('button_pressed').connect(self._handle_button)
+        signal('previous_page').connect(self._previous_page)
+        signal('next_page').connect(self._next_page)
+        signal('home_page').connect(self._home_page)
 
     def add_page(self, content: Dict):
         page: Optional[Page] = None
@@ -30,62 +35,13 @@ class PageController:
 
     def update_page(self, new_content: dict, page_index: Optional[int] = None):
         index = page_index
-        if page_index == None:
+        if page_index is None:
             index = self._current_page_index
         
         page = self._pages[index]
         page.set_content(new_content)
         if self._current_page_index == page_index:
             self._refresh_current_page()
-
-    def _setup_buttons(self):
-        self._lcd_controller.set_button_eventhandler(button=PiFaceController.ROCKER_LEFT,
-                                                     handler=self._handle_browse_button)
-        self._lcd_controller.set_button_eventhandler(button=PiFaceController.ROCKER_RIGHT,
-                                                     handler=self._handle_browse_button)
-        self._lcd_controller.set_button_eventhandler(button=PiFaceController.ROCKER_PRESS,
-                                                     handler=self._handle_browse_button)
-        self._lcd_controller.set_button_eventhandler(button=PiFaceController.BUTTON_0,
-                                                     handler=self._handle_action_button)
-        self._lcd_controller.set_button_eventhandler(button=PiFaceController.BUTTON_1,
-                                                     handler=self._handle_action_button)
-        self._lcd_controller.set_button_eventhandler(button=PiFaceController.BUTTON_2,
-                                                     handler=self._handle_action_button)
-        self._lcd_controller.set_button_eventhandler(button=PiFaceController.BUTTON_3,
-                                                     handler=self._handle_action_button)
-        self._lcd_controller.set_button_eventhandler(button=PiFaceController.BUTTON_4,
-                                                     handler=self._handle_action_button)
-
-    def _handle_browse_button(self, sender, **kwargs):
-        button = kwargs['button']
-        if button == PiFaceController.ROCKER_LEFT:
-            self._previous_page()
-        elif button == PiFaceController.ROCKER_RIGHT:
-            self._next_page()
-        elif button == PiFaceController.ROCKER_PRESS:
-            self._home_page()
-
-    def _handle_action_button(self, sender, **kwargs):
-        current_page = self._pages[self._current_page_index]
-        if isinstance(current_page, ActionPage):
-            button = kwargs['button']
-            current_page.execute_action(button)
-
-    def _previous_page(self):
-        if self._current_page_index > 0:
-            self._current_page_index -= 1
-        else:
-            self._current_page_index = len(self._pages) - 1
-
-        self._display_current_page()
-
-    def _next_page(self):
-        self._current_page_index = (self._current_page_index + 1) % len(self._pages)
-        self._display_current_page()
-
-    def _home_page(self):
-        self._current_page_index = 0
-        self._display_current_page()
 
     def display(self, page_index=None):
         if page_index is not None:
@@ -103,3 +59,25 @@ class PageController:
     def _display_current_page(self):
         log.debug(f"Displaying page: {self._current_page_index}")
         self._pages[self._current_page_index].display(is_update=False)
+
+    def _handle_button(self, sender, button: int):
+        if len(self._pages) > 0:
+            current_page: Page = self._pages[self._current_page_index]
+            current_page.handle_button(sender, button)
+
+    def _previous_page(self, sender):
+        if self._current_page_index > 0:
+            self._current_page_index -= 1
+        else:
+            self._current_page_index = len(self._pages) - 1
+
+        self._display_current_page()
+
+    def _next_page(self, sender):
+        self._current_page_index = (self._current_page_index + 1) % len(self._pages)
+        self._display_current_page()
+
+    def _home_page(self, sender):
+        self._current_page_index = 0
+        self._display_current_page()
+

@@ -13,6 +13,7 @@ import logging
 from time import sleep
 import datetime
 
+log = logging.getLogger(__name__)
 from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
 from lcd_control.piface_controller import PiFaceController
 from pager.page_controller import PageController
@@ -80,6 +81,10 @@ def standby(pager, lcd):
     pager.display()
 
 
+def display_input(sender, result):
+    log.info(f"Input = {result}")
+
+
 def update_time(pager: PageController, lcd):
     curr_date = datetime.datetime.now().strftime("%d-%b-%Y")
     curr_time = datetime.datetime.now().strftime("%H:%M:%S")
@@ -111,6 +116,8 @@ def create_pages():
               "actions": [{"label": "A", "action": "pager_example.actionA"},
                           {"label": "B", "action": "pager_example.actionB"},
                           {"label": "C", "action": "pager_example.actionC"}]},
+             {"input_string": "Enter a number: %i",
+              "on_input_received_action": "pager_example.display_input"},
              ]
     return pages
 
