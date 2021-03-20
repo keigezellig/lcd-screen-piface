@@ -4,7 +4,7 @@ from typing import List, Dict, Optional
 from blinker import signal
 
 from lcd_control.piface_controller import PiFaceController
-from pager.page import Page, SimplePage, ActionPage, InputPage
+from pager.page import Page, SimplePage, ActionPage
 
 log = logging.getLogger(__name__)
 

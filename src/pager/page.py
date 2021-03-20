@@ -81,7 +81,7 @@ class ActionPage(NonModalPage):
     def _execute_action(self, button: int):
         actions = self._content['actions']
         if len(actions) > 0 and button < len(actions):
-            action = actions[button]
+            action = actions[button]['action']
             action()
 
     def set_content(self, content: Dict):
