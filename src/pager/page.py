@@ -82,12 +82,7 @@ class ActionPage(NonModalPage):
         actions = self._content['actions']
         if len(actions) > 0 and button < len(actions):
             action = actions[button]
-            module_name = action['action'].split('.')[0]
-            function = action['action'].split('.')[1]
-            log.debug(f"Executing action: {module_name}.{function}")
-            module = __import__(module_name)
-            func = getattr(module, function)
-            func(self, self._lcd_controller)
+            action()
 
     def set_content(self, content: Dict):
         if ('caption' not in content) or ('actions' not in content):

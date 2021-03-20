@@ -20,69 +20,68 @@ from pager.page_controller import PageController
 
 from timer_functions import RepeatedTimer
 
+lcd_controller: PiFaceController = PiFaceController(PiFaceCadInterface())
+page_controller: PageController = PageController(lcd_controller=lcd_controller)
 
-def actionA(pager, lcd):
-    lcd.display_text(textlines=["Action A"], location=None, should_clear=True)
+
+def actionA():
+    lcd_controller.display_text(textlines=["Action A"], location=None, should_clear=True)
     sleep(5)
-    pager.display()
+    page_controller.display()
 
 
-def actionB(pager, lcd):
-    lcd.display_text(textlines=["Action B"], location=None, should_clear=True)
+def actionB():
+    lcd_controller.display_text(textlines=["Action B"], location=None, should_clear=True)
     sleep(5)
-    pager.display()
+    page_controller.display()
 
 
-def actionC(pager, lcd):
-    lcd.display_text(textlines=["Action C"], location=None, should_clear=True)
+def actionC():
+    lcd_controller.display_text(textlines=["Action C"], location=None, should_clear=True)
     sleep(5)
-    pager.display()
+    page_controller.display()
 
 
 def actionD(pager, lcd):
-    lcd.display_text(textlines=["Action D"], location=None, should_clear=True)
+    lcd_controller.display_text(textlines=["Action D"], location=None, should_clear=True)
     sleep(5)
-    pager.display()
+    page_controller.display()
 
 
-def actionE(pager, lcd):
-    lcd.display_text(textlines=["Action E"], location=None, should_clear=True)
+def actionE():
+    lcd_controller.display_text(textlines=["Action E"], location=None, should_clear=True)
     sleep(5)
-    pager.display()
+    page_controller.display()
 
 
-def play(pager, lcd):
-    lcd.display_text(textlines=["Play"], location=None, should_clear=True)
+def play():
+    lcd_controller.display_text(textlines=["Play"], location=None, should_clear=True)
     sleep(5)
-    pager.display()
+    page_controller.display()
 
 
-def pause(pager, lcd):
-    lcd.display_text(textlines=["Pause"], location=None, should_clear=True)
+def pause():
+    lcd_controller.display_text(textlines=["Pause"], location=None, should_clear=True)
     sleep(5)
-    pager.display()
+    page_controller.display()
 
 
-def stop(pager, lcd):
-    lcd.display_text(textlines=["Stop"], location=None, should_clear=True)
+def stop():
+    lcd_controller.display_text(textlines=["Stop"], location=None, should_clear=True)
     sleep(5)
-    pager.display()
+    page_controller.display()
 
 
-def record(pager, lcd):
-    lcd.display_text(textlines=["Record"], location=None, should_clear=True)
+def record():
+    lcd_controller.display_text(textlines=["Record"], location=None, should_clear=True)
     sleep(5)
-    pager.display()
+    page_controller.display()
 
 
-def standby(pager, lcd):
-    lcd.display_text(textlines=["Standby"], location=None, should_clear=True)
+def standby():
+    lcd_controller.display_text(textlines=["Standby"], location=None, should_clear=True)
     sleep(5)
-    pager.display()
-
-
-def display_input(sender, result):
-    log.info(f"Input = {result}")
+    page_controller.display()
 
 
 def update_time(pager: PageController, lcd):
@@ -101,23 +100,21 @@ def create_pages():
     pages = [{"line1": "",
               "line2": ""},
              {"caption": "P1 (labels)",
-              "actions": [{"label": "A", "action": "pager_example.actionA"},
-                          {"label": "B", "action": "pager_example.actionB"},
-                          {"label": "C", "action": "pager_example.actionC"},
-                          {"label": "D", "action": "pager_example.actionD"},
-                          {"label": "E", "action": "pager_example.actionE"}]},
+              "actions": [{"label": "A", "action": actionA},
+                          {"label": "B", "action": actionB},
+                          {"label": "C", "action": actionC},
+                          {"label": "D", "action": actionD},
+                          {"label": "E", "action": actionE}]},
              {"caption": "P2 (bitmaps)",
-              "actions": [{"bitmap": bitmaps["play"], "action": "pager_example.play"},
-                          {"bitmap": bitmaps["pause"], "action": "pager_example.pause"},
-                          {"bitmap": bitmaps["stop"], "action": "pager_example.stop"},
-                          {"bitmap": bitmaps["record"], "action": "pager_example.record"},
-                          {"bitmap": bitmaps["standby"], "action": "pager_example.standby"}]},
+              "actions": [{"bitmap": bitmaps["play"], "action": play},
+                          {"bitmap": bitmaps["pause"], "action": pause},
+                          {"bitmap": bitmaps["stop"], "action": stop},
+                          {"bitmap": bitmaps["record"], "action": record},
+                          {"bitmap": bitmaps["standby"], "action": standby}]},
              {"caption": "P3 (less actions)",
-              "actions": [{"label": "A", "action": "pager_example.actionA"},
-                          {"label": "B", "action": "pager_example.actionB"},
-                          {"label": "C", "action": "pager_example.actionC"}]},
-             {"input_string": "Enter a number: %i",
-              "on_input_received_action": "pager_example.display_input"},
+              "actions": [{"label": "A", "action": actionA},
+                          {"label": "B", "action": actionB},
+                          {"label": "C", "action": actionC}]},
              ]
     return pages
 
@@ -126,8 +123,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s - %(levelname)s - %(name)s - %(module)s.%(funcName)s - %(message)s')
 
-    lcd_controller: PiFaceController = PiFaceController(PiFaceCadInterface())
-    page_controller: PageController = PageController(lcd_controller=lcd_controller)
     timer = RepeatedTimer(1.0, update_time, page_controller, lcd_controller)
 
     try:
