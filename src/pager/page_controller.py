@@ -37,7 +37,7 @@ class PageController:
         index = page_index
         if page_index is None:
             index = self._current_page_index
-        
+
         page = self._pages[index]
         page.set_content(new_content)
         if self._current_page_index == page_index:
@@ -50,9 +50,9 @@ class PageController:
             else:
                 self._current_page_index = page_index
 
-        self._display_current_page(should_clear=True)
+        self._display_current_page()
 
-    def _display_current_page(self, should_clear: bool):
+    def _display_current_page(self, should_clear: bool = True):
         log.debug(f"Displaying page: {self._current_page_index}")
         self._pages[self._current_page_index].display(should_clear)
 
@@ -76,4 +76,3 @@ class PageController:
     def _home_page(self, sender):
         self._current_page_index = 0
         self._display_current_page()
-
