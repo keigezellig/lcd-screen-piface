@@ -79,7 +79,6 @@ class SimplePage(NonModalPage):
                 if line2 is not None and line2 != self._content[1]:
                     self._line2_is_dirty = self._content[0] != line2
                     self._content[1] = line1
-                    self._line2_is_dirty = True
 
 
 class ActionPage(NonModalPage):
