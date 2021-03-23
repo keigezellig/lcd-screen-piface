@@ -42,16 +42,9 @@ class SimplePage(NonModalPage):
     def __init__(self, lcd_controller: PiFaceController):
         super().__init__(lcd_controller)
         self._content: List = []
-        self._line1_is_dirty: bool = False
-        self._line2_is_dirty: bool = False
 
     def display(self):
-        if self._line1_is_dirty and self._line2_is_dirty:
-            self._lcd_controller.display_screen(textlines=self._content, should_clear=False)
-        elif self._line1_is_dirty:
-            self._lcd_controller.display_text(text=self._content[0], location=(0, 0))
-        elif self._line2_is_dirty:
-            self._lcd_controller.display_text(text=self._content[1], location=(1, 0))
+        self._lcd_controller.display_screen(textlines=self._content, should_clear=False)
 
     def set_content(self, content: Dict):
         if 'line1' not in content and 'line2' not in content:
@@ -60,25 +53,15 @@ class SimplePage(NonModalPage):
         if not self._content:
             self._content.append('' if 'line1' not in content else content['line1'])
             self._content.append('' if 'line2' not in content else content['line2'])
-            self._line1_is_dirty = True
-            self._line2_is_dirty = True
         else:
             line1: Optional[str] = None if 'line1' not in content else content['line1']
             line2: Optional[str] = None if 'line2' not in content else content['line2']
-            if line1 and line2:
-                self._line1_is_dirty = self._content[0] != line1
-                self._line2_is_dirty = self._content[1] != line2
-                if line1 != self._content[0]:
-                    self._content[0] = line1
-                if line2 != self._content[1]:
-                    self._content[1] = line2
-            else:
-                if line1 is not None and line1 != self._content[0]:
-                    self._line1_is_dirty = self._content[0] != line1
-                    self._content[0] = line1
-                if line2 is not None and line2 != self._content[1]:
-                    self._line2_is_dirty = self._content[0] != line2
-                    self._content[1] = line1
+            if line1 and line1 != self._content[0]:
+                self._content[0] = line1
+            if line2 and line2 != self._content[1]:
+                self._content[1] = line2
+
+
 
 
 class ActionPage(NonModalPage):

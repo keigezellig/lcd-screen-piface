@@ -11,6 +11,8 @@ import datetime
 import logging
 from time import sleep
 
+from lcd_control.hw.dummy_lcd_interface import DummyInterface
+
 log = logging.getLogger(__name__)
 from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
 from lcd_control.piface_controller import PiFaceController
@@ -25,61 +27,61 @@ count_b: int = 0
 
 
 def actionA():
-    lcd_controller.display_text(textlines=["Action A"], location=None, should_clear=True)
+    lcd_controller.display_screen(textlines=["Action A"], location=None, should_clear=True)
     sleep(5)
     page_controller.display()
 
 
 def actionB():
-    lcd_controller.display_text(textlines=["Action B"], location=None, should_clear=True)
+    lcd_controller.display_screen(textlines=["Action B"], location=None, should_clear=True)
     sleep(5)
     page_controller.display()
 
 
 def actionC():
-    lcd_controller.display_text(textlines=["Action C"], location=None, should_clear=True)
+    lcd_controller.display_screen(textlines=["Action C"], location=None, should_clear=True)
     sleep(5)
     page_controller.display()
 
 
 def actionD():
-    lcd_controller.display_text(textlines=["Action D"], location=None, should_clear=True)
+    lcd_controller.display_screen(textlines=["Action D"], location=None, should_clear=True)
     sleep(5)
     page_controller.display()
 
 
 def actionE():
-    lcd_controller.display_text(textlines=["Action E"], location=None, should_clear=True)
+    lcd_controller.display_screen(textlines=["Action E"], location=None, should_clear=True)
     sleep(5)
     page_controller.display()
 
 
 def play():
-    lcd_controller.display_text(textlines=["Play"], location=None, should_clear=True)
+    lcd_controller.display_screen(textlines=["Play"], location=None, should_clear=True)
     sleep(5)
     page_controller.display()
 
 
 def pause():
-    lcd_controller.display_text(textlines=["Pause"], location=None, should_clear=True)
+    lcd_controller.display_screen(textlines=["Pause"], location=None, should_clear=True)
     sleep(5)
     page_controller.display()
 
 
 def stop():
-    lcd_controller.display_text(textlines=["Stop"], location=None, should_clear=True)
+    lcd_controller.display_screen(textlines=["Stop"], location=None, should_clear=True)
     sleep(5)
     page_controller.display()
 
 
 def record():
-    lcd_controller.display_text(textlines=["Record"], location=None, should_clear=True)
+    lcd_controller.display_screen(textlines=["Record"], location=None, should_clear=True)
     sleep(5)
     page_controller.display()
 
 
 def standby():
-    lcd_controller.display_text(textlines=["Standby"], location=None, should_clear=True)
+    lcd_controller.display_screen(textlines=["Standby"], location=None, should_clear=True)
     sleep(5)
     page_controller.display()
 
@@ -149,10 +151,12 @@ if __name__ == '__main__':
                                               delay=.1)
         page_controller.display()
         timer.start()
+        timer2.start()
 
         while True:
             sleep(0.1)
 
     except KeyboardInterrupt:
+        timer2.stop()
         timer.stop()
         lcd_controller.close()
