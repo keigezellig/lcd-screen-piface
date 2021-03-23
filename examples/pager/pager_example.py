@@ -11,8 +11,6 @@ import datetime
 import logging
 from time import sleep
 
-from lcd_control.hw.dummy_lcd_interface import DummyInterface
-
 log = logging.getLogger(__name__)
 from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
 from lcd_control.piface_controller import PiFaceController
@@ -92,13 +90,13 @@ def update_time(pager: PageController):
     pager.update_page(page_index=0, new_content={"line1": curr_date, "line2": curr_time})
 
     global count_a
-    pager.update_page(page_index=4, new_content={"line1": count_a})
+    pager.update_page(page_index=4, new_content={"line1": str(count_a)})
     count_a += 1
 
 
 def update_time_2(pager: PageController):
     global count_b
-    pager.update_page(page_index=4, new_content={"line2": count_b})
+    pager.update_page(page_index=4, new_content={"line2": str(count_b)})
     count_b += 2
 
 
