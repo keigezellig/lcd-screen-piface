@@ -44,7 +44,7 @@ class SimplePage(NonModalPage):
         self._content: List = []
 
     def display(self):
-        self._lcd_controller.display_screen(textlines=self._content, should_clear=False)
+        self._lcd_controller.display_screen(textlines=self._content, should_clear=True)
 
     def set_content(self, content: Dict):
         if 'line1' not in content and 'line2' not in content:
