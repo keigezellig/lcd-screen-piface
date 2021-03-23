@@ -48,11 +48,9 @@ class SimplePage(NonModalPage):
     def display(self):
         if self._line1_is_dirty and self._line2_is_dirty:
             self._lcd_controller.display_screen(textlines=self._content, should_clear=False)
-
-        if self._line1_is_dirty:
+        elif self._line1_is_dirty:
             self._lcd_controller.display_text(text=self._content[0], location=(0, 0))
-
-        if self._line2_is_dirty:
+        elif self._line2_is_dirty:
             self._lcd_controller.display_text(text=self._content[1], location=(1, 0))
 
     def set_content(self, content: Dict):
@@ -75,10 +73,10 @@ class SimplePage(NonModalPage):
                 if line2 != self._content[1]:
                     self._content[1] = line2
             else:
-                if line1 != self._content[0]:
+                if line1 is not None and line1 != self._content[0]:
                     self._line1_is_dirty = self._content[0] != line1
                     self._content[0] = line1
-                if line2 != self._content[1]:
+                if line2 is not None and line2 != self._content[1]:
                     self._line2_is_dirty = self._content[0] != line2
                     self._content[1] = line1
                     self._line2_is_dirty = True
@@ -95,7 +93,7 @@ class ActionPage(NonModalPage):
         caption: str = self._content['caption']
         actions: List[Dict] = self._content['actions']
 
-        self._lcd_controller.display_screen(textlines=[caption], location=(0, 0), should_clear=not is_update)
+        self._lcd_controller.display_screen(textlines=[caption], location=(0, 0), should_clear=True)
 
         for idx, action in enumerate(actions):
             if 'label' in action:
