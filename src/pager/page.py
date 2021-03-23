@@ -14,7 +14,7 @@ class Page(metaclass=abc.ABCMeta):
         self._lcd_controller: PiFaceController = lcd_controller
 
     @abc.abstractmethod
-    def display(self):
+    def display(self, should_clear: bool):
         pass
 
     @abc.abstractmethod
@@ -43,8 +43,8 @@ class SimplePage(NonModalPage):
         super().__init__(lcd_controller)
         self._content: List = []
 
-    def display(self):
-        self._lcd_controller.display_screen(textlines=self._content, should_clear=True)
+    def display(self, should_clear):
+        self._lcd_controller.display_screen(textlines=self._content, should_clear=should_clear)
 
     def set_content(self, content: Dict):
         if 'line1' not in content and 'line2' not in content:
@@ -62,8 +62,6 @@ class SimplePage(NonModalPage):
                 self._content[1] = line2
 
 
-
-
 class ActionPage(NonModalPage):
     _MAX_ACTIONS = 5
 
@@ -71,11 +69,11 @@ class ActionPage(NonModalPage):
         super().__init__(lcd_controller)
         self._content: Dict = {}
 
-    def display(self):
+    def display(self, should_clear):
         caption: str = self._content['caption']
         actions: List[Dict] = self._content['actions']
 
-        self._lcd_controller.display_screen(textlines=[caption], location=(0, 0), should_clear=True)
+        self._lcd_controller.display_screen(textlines=[caption], location=(0, 0), should_clear=should_clear)
 
         for idx, action in enumerate(actions):
             if 'label' in action:
