@@ -1,6 +1,6 @@
 import abc
 import logging
-from typing import List, Dict, Callable, Optional
+from typing import List, Dict, Optional
 
 from blinker import signal
 
@@ -73,12 +73,13 @@ class ActionPage(NonModalPage):
         caption: str = self._content['caption']
         actions: List[Dict] = self._content['actions']
 
-        self._lcd_controller.display_screen(textlines=[caption], location=(0, 0), should_clear=should_clear)
+        self._lcd_controller.display_text(text=caption, location=(0, 0))
+        # self._lcd_controller.display_screen(textlines=[caption], location=(0, 0), should_clear=should_clear)
 
         for idx, action in enumerate(actions):
             if 'label' in action:
-                self._lcd_controller.display_screen(textlines=[action['label']], location=(1, idx * 2),
-                                                    should_clear=False)
+                self._lcd_controller.display_text(text=action['label'], location=(1, idx * 2))
+
             if 'bitmap' in action:
                 self._lcd_controller.display_bitmap(index=idx, location=(1, idx * 2))
 
