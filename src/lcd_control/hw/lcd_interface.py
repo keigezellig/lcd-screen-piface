@@ -1,6 +1,6 @@
 import abc
 import logging
-from typing import List, Tuple, Callable
+from typing import List, Tuple, Callable, Optional
 
 log = logging.getLogger(__name__)
 
@@ -16,7 +16,11 @@ class LcdInterface(metaclass=abc.ABCMeta):
         log.info("Setting up keys")
 
     @abc.abstractmethod
-    def display_text(self, text_lines: List[str], location: Tuple[int, int], should_clear: bool):
+    def display_screen(self, text_lines: List[str], location: Tuple[int, int], should_clear: bool):
+        pass
+
+    @abc.abstractmethod
+    def display_text(self, text: str, location: Optional[Tuple[int, int]] = None, should_clear_row_first = True):
         pass
 
     @abc.abstractmethod

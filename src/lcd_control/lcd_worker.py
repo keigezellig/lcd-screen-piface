@@ -42,7 +42,9 @@ class LCDWorker:
                 lcd_method = getattr(self._lcd.__class__, command)
                 # Execute command
                 if command == 'display_text':
-                    lcd_method(self._lcd, parameters['text_lines'], parameters['location'], parameters['should_clear'])
+                    lcd_method(self._lcd, parameters['text'], parameters['location'], parameters['should_clear_row_first'])
+                if command == 'display_screen':
+                    lcd_method(self._lcd, parameters['text_lines'], parameters['should_clear'], parameters['location'])
                 elif command == 'scroll_left':
                     lcd_method(self._lcd, parameters['number_of_positions'])
                 elif command == 'scroll_right':

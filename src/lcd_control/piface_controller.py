@@ -33,14 +33,17 @@ class PiFaceController:
     def _handle_button(self, button: int):
         signal(self.BUTTON_PRESSED_SIGNAL).send(self, button=button)
 
+    def display_text(self, text: str, location: Optional[Tuple[int, int]], should_clear_row_first: bool = True):
+        item = ('display_text', {'text': text, 'location': location, 'should_clear_row_first': should_clear_row_first})
+        self._worker.schedule_command(item)
 
-    def display_text(self, textlines: List[str], location: Optional[Tuple[int, int]], should_clear: bool):
-        item = ('display_text', {'text_lines': textlines, 'location': location, 'should_clear': should_clear})
+    def display_screen(self, textlines: List[str], should_clear: bool, location: Optional[Tuple[int, int]] = (0, 0)):
+        item = ('display_screen', {'text_lines': textlines, 'location': location, 'should_clear': should_clear})
         self._worker.schedule_command(item)
 
     def load_bitmap(self, bitmap_data: List[int], index: int):
         log.debug(bitmap_data)
-        item = ('load_bitmap', {'bitmap_data': bitmap_data, 'index':index})
+        item = ('load_bitmap', {'bitmap_data': bitmap_data, 'index': index})
         self._worker.schedule_command(item)
 
     def display_bitmap(self, index: int, location: Tuple[int, int] = None):

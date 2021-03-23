@@ -1,6 +1,6 @@
 import abc
 import logging
-from typing import List, Dict, Callable
+from typing import List, Dict, Callable, Optional
 
 from blinker import signal
 
@@ -14,7 +14,7 @@ class Page(metaclass=abc.ABCMeta):
         self._lcd_controller: PiFaceController = lcd_controller
 
     @abc.abstractmethod
-    def display(self, is_update=False):
+    def display(self):
         pass
 
     @abc.abstractmethod
@@ -41,17 +41,47 @@ class NonModalPage(Page, metaclass=abc.ABCMeta):
 class SimplePage(NonModalPage):
     def __init__(self, lcd_controller: PiFaceController):
         super().__init__(lcd_controller)
-        self._content: Dict = {}
+        self._content: List = []
+        self._line1_is_dirty: bool = False
+        self._line2_is_dirty: bool = False
 
-    def display(self, is_update=False):
-        self._lcd_controller.display_text([self._content['line1'], self._content['line2']], location=(0, 0),
-                                          should_clear=not is_update)
+    def display(self):
+        if self._line1_is_dirty and self._line2_is_dirty:
+            self._lcd_controller.display_screen(textlines=self._content, should_clear=False)
+
+        if self._line1_is_dirty:
+            self._lcd_controller.display_text(text=self._content[0], location=(0, 0))
+
+        if self._line2_is_dirty:
+            self._lcd_controller.display_text(text=self._content[1], location=(1, 0))
 
     def set_content(self, content: Dict):
-        if ('line1' not in content) or ('line2' not in content):
-            raise ValueError('Content of a simple page should contain a dictionary with "line1" and "line2" keys')
+        if 'line1' not in content and 'line2' not in content:
+            raise ValueError("Content should contain keys 'line1' or 'line2'")
 
-        self._content = content
+        if not self._content:
+            self._content.append('' if 'line1' not in content else content['line1'])
+            self._content.append('' if 'line2' not in content else content['line2'])
+            self._line1_is_dirty = True
+            self._line2_is_dirty = True
+        else:
+            line1: Optional[str] = None if 'line1' not in content else content['line1']
+            line2: Optional[str] = None if 'line2' not in content else content['line2']
+            if line1 and line2:
+                self._line1_is_dirty = self._content[0] != line1
+                self._line2_is_dirty = self._content[1] != line2
+                if line1 != self._content[0]:
+                    self._content[0] = line1
+                if line2 != self._content[1]:
+                    self._content[1] = line2
+            else:
+                if line1 != self._content[0]:
+                    self._line1_is_dirty = self._content[0] != line1
+                    self._content[0] = line1
+                if line2 != self._content[1]:
+                    self._line2_is_dirty = self._content[0] != line2
+                    self._content[1] = line1
+                    self._line2_is_dirty = True
 
 
 class ActionPage(NonModalPage):
@@ -61,16 +91,16 @@ class ActionPage(NonModalPage):
         super().__init__(lcd_controller)
         self._content: Dict = {}
 
-    def display(self, is_update=False):
+    def display(self):
         caption: str = self._content['caption']
         actions: List[Dict] = self._content['actions']
 
-        self._lcd_controller.display_text(textlines=[caption], location=(0, 0), should_clear=not is_update)
+        self._lcd_controller.display_screen(textlines=[caption], location=(0, 0), should_clear=not is_update)
 
         for idx, action in enumerate(actions):
             if 'label' in action:
-                self._lcd_controller.display_text(textlines=[action['label']], location=(1, idx * 2),
-                                                  should_clear=False)
+                self._lcd_controller.display_screen(textlines=[action['label']], location=(1, idx * 2),
+                                                    should_clear=False)
             if 'bitmap' in action:
                 self._lcd_controller.display_bitmap(index=idx, location=(1, idx * 2))
 

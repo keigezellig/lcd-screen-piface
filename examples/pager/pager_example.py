@@ -1,5 +1,3 @@
-import os, sys
-
 # currentdir = os.path.dirname(os.path.realpath(__file__))
 # parentdir = os.path.dirname(currentdir)
 # sys.path.append(parentdir)
@@ -9,9 +7,9 @@ import os, sys
 # from pager.page_controller import PageController
 
 
+import datetime
 import logging
 from time import sleep
-import datetime
 
 log = logging.getLogger(__name__)
 from lcd_control.hw.pifacecad_interface import PiFaceCadInterface
@@ -22,6 +20,8 @@ from timer_functions import RepeatedTimer
 
 lcd_controller: PiFaceController = PiFaceController(PiFaceCadInterface())
 page_controller: PageController = PageController(lcd_controller=lcd_controller)
+count_a: int = 0
+count_b: int = 0
 
 
 def actionA():
@@ -84,10 +84,20 @@ def standby():
     page_controller.display()
 
 
-def update_time(pager: PageController, lcd):
+def update_time(pager: PageController):
     curr_date = datetime.datetime.now().strftime("%d-%b-%Y")
     curr_time = datetime.datetime.now().strftime("%H:%M:%S")
     pager.update_page(page_index=0, new_content={"line1": curr_date, "line2": curr_time})
+
+    global count_a
+    pager.update_page(page_index=4, new_content={"line1": count_a})
+    count_a += 1
+
+
+def update_time_2(pager: PageController):
+    global count_b
+    pager.update_page(page_index=4, new_content={"line2": count_b})
+    count_b += 2
 
 
 def create_pages():
@@ -115,6 +125,8 @@ def create_pages():
               "actions": [{"label": "A", "action": actionA},
                           {"label": "B", "action": actionB},
                           {"label": "C", "action": actionC}]},
+             {"line1": "",
+              "line2": ""},
              ]
     return pages
 
@@ -123,7 +135,8 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s - %(levelname)s - %(name)s - %(module)s.%(funcName)s - %(message)s')
 
-    timer = RepeatedTimer(1.0, update_time, page_controller, lcd_controller)
+    timer = RepeatedTimer(1.0, update_time, page_controller)
+    timer2 = RepeatedTimer(2.0, update_time_2, page_controller)
 
     try:
         lcd_controller.start()

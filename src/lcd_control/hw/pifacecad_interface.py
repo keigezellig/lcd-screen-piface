@@ -44,25 +44,40 @@ class PiFaceCadInterface(LcdInterface):
         log.debug(f"Button {event.pin_num} pressed")
         self._key_handler(event.pin_num)
 
-    def display_text(self, text_lines: List[str], location: Optional[Tuple[int, int]], should_clear: bool):
-        log.debug(f"display_text({text_lines}, {location}, {should_clear}")
+    def display_text(self, text: str, location: Optional[Tuple[int, int]] = None, should_clear_row_first=True):
+        log.debug(f"display_text({text}, {location}, {should_clear_row_first}")
+        output = text[:16]
+        col, row = self._pi_face.lcd.get_cursor()
+        if location is not None:
+            row, col = location
 
-        if len(text_lines[0]) < self._maxColumns:
-            text_lines[0] = '{:16}'.format(text_lines[0])
+        if row > self._maxRows - 1:
+            log.warning(
+                f'Row index is larger than the number of rows on the lcd, setting to the max allowed row index {self._maxRows - 1}')
+            row = self._maxRows - 1
+        if col >= self._maxColumns - len(output):
+            col = self._maxColumns - len(output)
+            log.warning(f'Text won´t fit on this line with this column position. Moving text back to column {col}')
 
-        if len(text_lines) == self._maxRows and len(text_lines[1]) < self._maxColumns:
-            text_lines[1] = '{:16}'.format(text_lines[1])
+        if should_clear_row_first:
+            # Pad stuff
+            output = f'{output:16}'
+
+        self._pi_face.lcd.set_cursor(row=row, col=col)
+        self._pi_face.lcd.write(output)
+
+    def display_screen(self, text_lines: List[str], should_clear: bool = True,
+                       location: Optional[Tuple[int, int]] = (0, 0)):
+        log.debug(f"display_screen({text_lines}, {location}, {should_clear}")
+        # Take 2 items from the list and truncate item to max 16 characters and pad each item to 16 characters
+        output_lines: List[str] = [f'{item[:16]:16}' for item in text_lines[:2]]
 
         if should_clear:
             self._pi_face.lcd.clear()
 
-        if location is not None and len(text_lines) == 1:
-            self._pi_face.lcd.set_cursor(location[1], location[0])
-            self._pi_face.lcd.write(text_lines[0])
-        else:
-            for i, item in enumerate(text_lines):
-                self._pi_face.lcd.set_cursor(0, i)
-                self._pi_face.lcd.write(item)
+        for i, item in enumerate(output_lines):
+            self._pi_face.lcd.set_cursor(row=i, col=0)
+            self._pi_face.lcd.write(item)
 
     def load_bitmap(self, bitmap_data: List[int], index: int):
         if len(bitmap_data) != 8:
@@ -85,7 +100,7 @@ class PiFaceCadInterface(LcdInterface):
 
     def display_scrolling_text(self, text_lines: List[str], direction: str, number_of_positions: int, delay: int):
         log.debug(f"_display_scrolling_text({text_lines}, {direction}, {number_of_positions},{delay}")
-        self.display_text(text_lines=text_lines, location=None, should_clear=True)
+        self.display_screen(text_lines=text_lines, location=None, should_clear=True)
         if direction != "both":
             for j in range(number_of_positions):
                 if direction == "left":
@@ -138,8 +153,6 @@ class PiFaceCadInterface(LcdInterface):
 
     def blink_off(self):
         self._pi_face.lcd.blink_off()
-
-
 
     def get_input(self, input_string: str):
         scanner: LCDScanf = LCDScanf(input_string)
