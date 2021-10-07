@@ -29,13 +29,13 @@ class NonModalPage(Page, metaclass=abc.ABCMeta):
     def __init__(self, lcd_controller: PiFaceController):
         super().__init__(lcd_controller=lcd_controller)
 
-    def handle_button(self, sender, button: int):
-        if button == PiFaceController.ROCKER_LEFT:
-            signal(name='previous_page').send()
-        elif button == PiFaceController.ROCKER_RIGHT:
-            signal(name='next_page').send()
-        elif button == PiFaceController.ROCKER_PRESS:
-            signal(name='home_page').send()
+    # def handle_button(self, sender, button: int):
+    #     if button == PiFaceController.ROCKER_LEFT:
+    #         signal(name='previous_page').send()
+    #     elif button == PiFaceController.ROCKER_RIGHT:
+    #         signal(name='next_page').send()
+    #     elif button == PiFaceController.ROCKER_PRESS:
+    #         signal(name='home_page').send()
 
 
 class SimplePage(NonModalPage):
@@ -63,7 +63,7 @@ class SimplePage(NonModalPage):
 
 
 class ActionPage(NonModalPage):
-    _MAX_ACTIONS = 5
+    _MAX_ACTIONS = 3
 
     def __init__(self, lcd_controller: PiFaceController):
         super().__init__(lcd_controller)
@@ -76,12 +76,14 @@ class ActionPage(NonModalPage):
         self._lcd_controller.display_text(text=caption, location=(0, 0))
         # self._lcd_controller.display_screen(textlines=[caption], location=(0, 0), should_clear=should_clear)
 
+        start_idx_position: int = 2
         for idx, action in enumerate(actions):
+            location = (1, (idx * 2) + start_idx_position)
             if 'label' in action:
-                self._lcd_controller.display_text(text=action['label'], location=(1, idx * 2))
+                self._lcd_controller.display_text(text=action['label'], location=location)
 
             if 'bitmap' in action:
-                self._lcd_controller.display_bitmap(index=idx, location=(1, idx * 2))
+                self._lcd_controller.display_bitmap(index=idx, location=location)
 
     def handle_button(self, sender, button: int):
         super().handle_button(sender=sender, button=button)

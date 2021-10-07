@@ -16,9 +16,6 @@ class PageController:
         self._current_page_index: int = 0
 
         signal('button_pressed').connect(self._handle_button)
-        signal('previous_page').connect(self._previous_page)
-        signal('next_page').connect(self._next_page)
-        signal('home_page').connect(self._home_page)
 
     def add_page(self, content: Dict):
         page: Optional[Page] = None
@@ -58,8 +55,13 @@ class PageController:
 
     def _handle_button(self, sender, button: int):
         if len(self._pages) > 0:
-            current_page: Page = self._pages[self._current_page_index]
-            current_page.handle_button(sender, button)
+            if button == PiFaceController.BUTTON_0:
+                self._previous_page(sender)
+            elif button == PiFaceController.BUTTON_4:
+                self._next_page(sender)
+            else:
+                current_page: Page = self._pages[self._current_page_index]
+                current_page.handle_button(sender, button)
 
     def _previous_page(self, sender):
         if self._current_page_index > 0:
