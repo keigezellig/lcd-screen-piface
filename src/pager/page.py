@@ -75,8 +75,9 @@ class ActionPage(NonModalPage):
 
         self._lcd_controller.display_text(text=caption, location=(0, 0))
         # self._lcd_controller.display_screen(textlines=[caption], location=(0, 0), should_clear=should_clear)
+        self._lcd_controller.display_text(text='', location=(1,0), should_clear_row_first=True)
 
-        start_idx_position: int = 2
+        start_idx_position: int = 1
         for idx, action in enumerate(actions):
             location = (1, (idx * 2) + start_idx_position)
             if 'label' in action:
@@ -87,13 +88,18 @@ class ActionPage(NonModalPage):
 
     def handle_button(self, sender, button: int):
         super().handle_button(sender=sender, button=button)
-        self._execute_action(button=button)
+        # Hacky way to use button 1,2,3 instead of 0,1,2,3,4 (since 0 and 4 are now used for switching pages)
+        if button > PiFaceController.BUTTON_0 and button < PiFaceController.BUTTON_4:
+            self._execute_action(button=button)
 
     def _execute_action(self, button: int):
+        # Hacky way to use button 1,2,3 instead of 0,1,2,3,4 (since 0 and 4 are now used for switching pages)
         actions = self._content['actions']
         if len(actions) > 0 and button < len(actions):
-            action = actions[button]['action']
+            action = actions[button-1]['action']
             action()
+
+        # 0,1,2
 
     def set_content(self, content: Dict):
         if ('caption' not in content) or ('actions' not in content):
